@@ -1,1351 +1,1673 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ŞENAGRO İŞLETME TAKİP</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADIGÜZEL- İŞLETME TAKİP</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
 
-        /* ... (Orijinal dosyadaki tüm CSS stilleri buraya kopyalandı) ... */
-        
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 25px 30px;
-            text-align: center;
-        }
+      /* ... (Orijinal dosyadaki tüm CSS stilleri buraya kopyalandı) ... */
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
+      .header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 25px 30px;
+        text-align: center;
+      }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
+      .header h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+      }
 
+      .header p {
+        opacity: 0.9;
+        font-size: 14px;
+      }
+
+      .tabs {
+        display: flex;
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        overflow-x: auto;
+        flex-wrap: wrap;
+      }
+
+      .tab {
+        padding: 15px 25px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 14px;
+        font-weight: 500;
+        color: #495057;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+        white-space: nowrap;
+      }
+
+      .tab:hover {
+        background: #e9ecef;
+      }
+
+      .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        background: white;
+      }
+
+      .content {
+        padding: 30px;
+        min-height: 600px;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .card.green {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+
+      .card.orange {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      .card.blue {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+
+      .card h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        opacity: 0.9;
+      }
+
+      .card .value {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .card .label {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+
+      .form-section {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+      }
+
+      .form-section h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        margin-bottom: 5px;
+        color: #495057;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 10px 12px;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .data-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 12px 15px;
+        text-align: left;
+        font-size: 13px;
+      }
+
+      .data-table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+        transition: background 0.2s;
+      }
+
+      .data-table tbody tr:hover {
+        background: #f8f9fa;
+      }
+
+      .data-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .btn-small {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-right: 5px;
+      }
+
+      .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      }
+
+      .alert-danger {
+        background: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+      }
+
+      .report-section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 2px solid #dee2e6;
+      }
+
+      .report-section h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+      }
+
+      .kasa-display {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .kasa-display h2 {
+        font-size: 48px;
+        margin: 10px 0;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .summary-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+      }
+
+      .summary-item.gelir {
+        border-left-color: #38ef7d;
+      }
+
+      .summary-item.gider {
+        border-left-color: #f5576c;
+      }
+
+      .summary-item label {
+        font-size: 13px;
+        color: #6c757d;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .summary-item .value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      @media (max-width: 768px) {
         .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            overflow-x: auto;
-            flex-wrap: wrap;
+          font-size: 12px;
         }
 
         .tab {
-            padding: 15px 25px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 14px;
-            font-weight: 500;
-            color: #495057;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-        }
-
-        .tab:hover {
-            background: #e9ecef;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            background: white;
+          padding: 12px 15px;
         }
 
         .content {
-            padding: 30px;
-            min-height: 600px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .card.green {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-
-        .card.orange {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        .card.blue {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .card h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-
-        .card .value {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .card .label {
-            font-size: 13px;
-            opacity: 0.8;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-
-        .form-section h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 20px;
+          padding: 15px;
         }
 
         .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+          grid-template-columns: 1fr;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
+        .dashboard-cards {
+          grid-template-columns: 1fr;
         }
+      }
 
-        .form-group label {
-            margin-bottom: 5px;
-            color: #495057;
-            font-weight: 500;
-            font-size: 14px;
-        }
+      .hidden {
+        display: none !important;
+      }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
+      .filter-section {
+        background: #e9ecef;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+      .filter-section h4 {
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
 
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
+      /* YÜKLENİYOR SPINNER'I */
+      .spinner-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 9998;
+        display: none; /* Başlangıçta gizli */
+        justify-content: center;
+        align-items: center;
+      }
+      .spinner {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #667eea;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        100% {
+          transform: rotate(360deg);
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .data-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 12px 15px;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        .data-table tbody tr {
-            border-bottom: 1px solid #dee2e6;
-            transition: background 0.2s;
-        }
-
-        .data-table tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .data-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 12px;
-            margin-right: 5px;
-        }
-
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            cursor: pointer;
-            width: 18px;
-            height: 18px;
-        }
-
-        .report-section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border: 2px solid #dee2e6;
-        }
-
-        .report-section h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .kasa-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .kasa-display h2 {
-            font-size: 48px;
-            margin: 10px 0;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .summary-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .summary-item.gelir {
-            border-left-color: #38ef7d;
-        }
-
-        .summary-item.gider {
-            border-left-color: #f5576c;
-        }
-
-        .summary-item label {
-            font-size: 13px;
-            color: #6c757d;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .summary-item .value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        @media (max-width: 768px) {
-            .tabs {
-                font-size: 12px;
-            }
-            
-            .tab {
-                padding: 12px 15px;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .filter-section {
-            background: #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .filter-section h4 {
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        
-        /* YÜKLENİYOR SPINNER'I */
-        .spinner-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            z-index: 9998;
-            display: none; /* Başlangıçta gizli */
-            justify-content: center;
-            align-items: center;
-        }
-        .spinner {
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="spinner-overlay" id="spinnerOverlay">
-        <div class="spinner"></div>
+      <div class="spinner"></div>
     </div>
 
     <div class="container">
-        <div class="header">
-            <h1>🚛 ŞENAGRO İŞLETME TAKİP</h1>
-            <p>Nakliye ve Ambar Yönetim Sistemi</p>
+      <div class="header">
+        <h1>🚛 Adıgüzel - İŞLETME TAKİP</h1>
+        <p>Nakliye ve Ambar Yönetim Sistemi</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('dashboard')">
+          📊 Dashboard
+        </button>
+        <button class="tab" onclick="showTab('tesis')">
+          🚪 Tesis Giriş/Çıkış
+        </button>
+        <button class="tab" onclick="showTab('arac')">
+          ⛽ Araç Yakıt Takibi
+        </button>
+        <button class="tab" onclick="showTab('personel')">
+          👥 Personel Takip
+        </button>
+        <button class="tab" onclick="showTab('giderler')">💸 Giderler</button>
+        <button class="tab" onclick="showTab('gelirler')">💰 Gelirler</button>
+        <button class="tab" onclick="showTab('kasa')">🏦 Kasa</button>
+        <button class="tab" onclick="showTab('raporlar')">📋 Raporlar</button>
+        <button class="tab" onclick="showTab('ayarlar')">⚙️ Ayarlar</button>
+      </div>
+
+      <div class="content">
+        <div id="dashboard" class="tab-content active">
+          <h2 style="color: #2c3e50; margin-bottom: 20px">
+            Dashboard - Genel Bakış
+          </h2>
+
+          <div class="dashboard-cards">
+            <div class="card">
+              <h3>Bugünkü Giriş/Çıkış</h3>
+              <div class="value" id="dashTesisCount">0</div>
+              <div class="label">Araç Hareketi</div>
+            </div>
+            <div class="card green">
+              <h3>Güncel Kasa</h3>
+              <div class="value" id="dashKasa">0 ₺</div>
+              <div class="label">Mevcut Bakiye</div>
+            </div>
+            <div class="card orange">
+              <h3>Toplam Araç</h3>
+              <div class="value" id="dashAracCount">0</div>
+              <div class="label">Kayıtlı Araç</div>
+            </div>
+            <div class="card blue">
+              <h3>Toplam Personel</h3>
+              <div class="value" id="dashPersonelCount">0</div>
+              <div class="label">Kayıtlı Personel</div>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item gelir">
+              <label>Bugünkü Gelir</label>
+              <div class="value" id="dashBugunGelir">0 ₺</div>
+            </div>
+            <div class="summary-item gider">
+              <label>Bugünkü Gider</label>
+              <div class="value" id="dashBugunGider">0 ₺</div>
+            </div>
+            <div class="summary-item">
+              <label>Aylık Gelir</label>
+              <div class="value" id="dashAylikGelir">0 ₺</div>
+            </div>
+            <div class="summary-item">
+              <label>Aylık Gider</label>
+              <div class="value" id="dashAylikGider">0 ₺</div>
+            </div>
+          </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
-            <button class="tab" onclick="showTab('tesis')">🚪 Tesis Giriş/Çıkış</button>
-            <button class="tab" onclick="showTab('arac')">⛽ Araç Yakıt Takibi</button>
-            <button class="tab" onclick="showTab('personel')">👥 Personel Takip</button>
-            <button class="tab" onclick="showTab('giderler')">💸 Giderler</button>
-            <button class="tab" onclick="showTab('gelirler')">💰 Gelirler</button>
-            <button class="tab" onclick="showTab('kasa')">🏦 Kasa</button>
-            <button class="tab" onclick="showTab('raporlar')">📋 Raporlar</button>
-            <button class="tab" onclick="showTab('ayarlar')">⚙️ Ayarlar</button>
+        <div id="tesis" class="tab-content">
+          <div class="form-section">
+            <h3>🚪 Tesis Giriş/Çıkış Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tarih/Saat *</label>
+                <input type="datetime-local" id="tesisTarih" required />
+              </div>
+              <div class="form-group">
+                <label>İşlem Türü *</label>
+                <select id="tesisIslem" required>
+                  <option value="">Seçiniz</option>
+                  <option value="Giriş">Giriş</option>
+                  <option value="Çıkış">Çıkış</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Araç Plakası *</label>
+                <input
+                  type="text"
+                  id="tesisPlaka"
+                  placeholder="34 ABC 123"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Şoför *</label>
+                <input
+                  type="text"
+                  id="tesisSofor"
+                  placeholder="Şoför Adı"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Ürün *</label>
+                <input
+                  type="text"
+                  id="tesisUrun"
+                  placeholder="Ürün Adı"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Miktar *</label>
+                <input
+                  type="number"
+                  id="tesisMiktar"
+                  placeholder="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Birim *</label>
+                <select id="tesisBirim" required>
+                  <option value="">Seçiniz</option>
+                  <option value="Litre">Litre</option>
+                  <option value="Kg">Kg</option>
+                  <option value="Adet">Adet</option>
+                  <option value="Ton">Ton</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Geldiği Yer *</label>
+                <input
+                  type="text"
+                  id="tesisNereden"
+                  placeholder="Şehir/Firma"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Gideceği Yer *</label>
+                <input
+                  type="text"
+                  id="tesisNereye"
+                  placeholder="Şehir/Firma"
+                  required
+                />
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="tesisKaydet()">
+              ✅ Kaydet
+            </button>
+            <button class="btn btn-warning" onclick="tesisSifirla()">
+              🔄 Temizle
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Tesis Giriş/Çıkış Listesi</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih/Saat</th>
+                    <th>İşlem</th>
+                    <th>Plaka</th>
+                    <th>Şoför</th>
+                    <th>Ürün</th>
+                    <th>Miktar</th>
+                    <th>Nereden</th>
+                    <th>Nereye</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="tesisTable">
+                  <tr>
+                    <td colspan="9" style="text-align: center; color: #6c757d">
+                      Henüz kayıt yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <div class="content">
-            <div id="dashboard" class="tab-content active">
-                <h2 style="color: #2c3e50; margin-bottom: 20px;">Dashboard - Genel Bakış</h2>
-                
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <h3>Bugünkü Giriş/Çıkış</h3>
-                        <div class="value" id="dashTesisCount">0</div>
-                        <div class="label">Araç Hareketi</div>
-                    </div>
-                    <div class="card green">
-                        <h3>Güncel Kasa</h3>
-                        <div class="value" id="dashKasa">0 ₺</div>
-                        <div class="label">Mevcut Bakiye</div>
-                    </div>
-                    <div class="card orange">
-                        <h3>Toplam Araç</h3>
-                        <div class="value" id="dashAracCount">0</div>
-                        <div class="label">Kayıtlı Araç</div>
-                    </div>
-                    <div class="card blue">
-                        <h3>Toplam Personel</h3>
-                        <div class="value" id="dashPersonelCount">0</div>
-                        <div class="label">Kayıtlı Personel</div>
-                    </div>
-                </div>
-
-                <div class="summary-grid">
-                    <div class="summary-item gelir">
-                        <label>Bugünkü Gelir</label>
-                        <div class="value" id="dashBugunGelir">0 ₺</div>
-                    </div>
-                    <div class="summary-item gider">
-                        <label>Bugünkü Gider</label>
-                        <div class="value" id="dashBugunGider">0 ₺</div>
-                    </div>
-                    <div class="summary-item">
-                        <label>Aylık Gelir</label>
-                        <div class="value" id="dashAylikGelir">0 ₺</div>
-                    </div>
-                    <div class="summary-item">
-                        <label>Aylık Gider</label>
-                        <div class="value" id="dashAylikGider">0 ₺</div>
-                    </div>
-                </div>
+        <div id="arac" class="tab-content">
+          <div class="form-section">
+            <h3>⛽ Araç Yakıt Takibi Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tarih *</label>
+                <input type="date" id="aracTarih" required />
+              </div>
+              <div class="form-group">
+                <label>Araç Seçimi *</label>
+                <select id="aracSecim" onchange="aracSecimDegisti()" required>
+                  <option value="">Seçiniz</option>
+                  <option value="manuel">📝 Manuel Giriş</option>
+                </select>
+              </div>
+              <div class="form-group hidden" id="aracPlakaManuelDiv">
+                <label>Araç Plakası (Manuel) *</label>
+                <input
+                  type="text"
+                  id="aracPlakaManuel"
+                  placeholder="34 ABC 123"
+                />
+              </div>
+              <div class="form-group">
+                <label>Şoför *</label>
+                <input
+                  type="text"
+                  id="aracSofor"
+                  placeholder="Şoför Adı"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Başlangıç Km *</label>
+                <input type="number" id="aracBasKm" placeholder="0" required />
+              </div>
+              <div class="form-group">
+                <label>Başlangıç Yakıt (Lt) *</label>
+                <input
+                  type="number"
+                  id="aracBasYakit"
+                  placeholder="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Eklenen Yakıt (Lt)</label>
+                <input
+                  type="number"
+                  id="aracEklenenYakit"
+                  placeholder="0"
+                  step="0.01"
+                  value="0"
+                />
+              </div>
+              <div class="form-group">
+                <label>Yakıt Eklenme Km</label>
+                <input type="number" id="aracYakitKm" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label>Tüketilen Yakıt (Lt) *</label>
+                <input
+                  type="number"
+                  id="aracSonYakit"
+                  placeholder="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Sefer Sonu Km *</label>
+                <input type="number" id="aracSonKm" placeholder="0" required />
+              </div>
             </div>
+            <button class="btn btn-primary" onclick="aracKaydet()">
+              ✅ Kaydet
+            </button>
+            <button class="btn btn-warning" onclick="aracSifirla()">
+              🔄 Temizle
+            </button>
+          </div>
 
-            <div id="tesis" class="tab-content">
-                <div class="form-section">
-                    <h3>🚪 Tesis Giriş/Çıkış Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tarih/Saat *</label>
-                            <input type="datetime-local" id="tesisTarih" required>
-                        </div>
-                        <div class="form-group">
-                            <label>İşlem Türü *</label>
-                            <select id="tesisIslem" required>
-                                <option value="">Seçiniz</option>
-                                <option value="Giriş">Giriş</option>
-                                <option value="Çıkış">Çıkış</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Araç Plakası *</label>
-                            <input type="text" id="tesisPlaka" placeholder="34 ABC 123" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Şoför *</label>
-                            <input type="text" id="tesisSofor" placeholder="Şoför Adı" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Ürün *</label>
-                            <input type="text" id="tesisUrun" placeholder="Ürün Adı" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Miktar *</label>
-                            <input type="number" id="tesisMiktar" placeholder="0" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Birim *</label>
-                            <select id="tesisBirim" required>
-                                <option value="">Seçiniz</option>
-                                <option value="Litre">Litre</option>
-                                <option value="Kg">Kg</option>
-                                <option value="Adet">Adet</option>
-                                <option value="Ton">Ton</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Geldiği Yer *</label>
-                            <input type="text" id="tesisNereden" placeholder="Şehir/Firma" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gideceği Yer *</label>
-                            <input type="text" id="tesisNereye" placeholder="Şehir/Firma" required>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="tesisKaydet()">✅ Kaydet</button>
-                    <button class="btn btn-warning" onclick="tesisSifirla()">🔄 Temizle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Tesis Giriş/Çıkış Listesi</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih/Saat</th>
-                                    <th>İşlem</th>
-                                    <th>Plaka</th>
-                                    <th>Şoför</th>
-                                    <th>Ürün</th>
-                                    <th>Miktar</th>
-                                    <th>Nereden</th>
-                                    <th>Nereye</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tesisTable">
-                                <tr><td colspan="9" style="text-align: center; color: #6c757d;">Henüz kayıt yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+          <div class="form-section">
+            <h3>📋 Araç Yakıt Takip Listesi</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>Plaka</th>
+                    <th>Şoför</th>
+                    <th>Baş. Km</th>
+                    <th>Baş. Yakıt</th>
+                    <th>Eklenen</th>
+                    <th>Top. Yakıt</th>
+                    <th>Tüketilen</th>
+                    <th>Son Km</th>
+                    <th>Kat. Km</th>
+                    <th>Sarfiyat</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="aracTable">
+                  <tr>
+                    <td colspan="12" style="text-align: center; color: #6c757d">
+                      Henüz kayıt yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-
-            <div id="arac" class="tab-content">
-                <div class="form-section">
-                    <h3>⛽ Araç Yakıt Takibi Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tarih *</label>
-                            <input type="date" id="aracTarih" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Araç Seçimi *</label>
-                            <select id="aracSecim" onchange="aracSecimDegisti()" required>
-                                <option value="">Seçiniz</option>
-                                <option value="manuel">📝 Manuel Giriş</option>
-                            </select>
-                        </div>
-                        <div class="form-group hidden" id="aracPlakaManuelDiv">
-                            <label>Araç Plakası (Manuel) *</label>
-                            <input type="text" id="aracPlakaManuel" placeholder="34 ABC 123">
-                        </div>
-                        <div class="form-group">
-                            <label>Şoför *</label>
-                            <input type="text" id="aracSofor" placeholder="Şoför Adı" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Başlangıç Km *</label>
-                            <input type="number" id="aracBasKm" placeholder="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Başlangıç Yakıt (Lt) *</label>
-                            <input type="number" id="aracBasYakit" placeholder="0" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Eklenen Yakıt (Lt)</label>
-                            <input type="number" id="aracEklenenYakit" placeholder="0" step="0.01" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Yakıt Eklenme Km</label>
-                            <input type="number" id="aracYakitKm" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Tüketilen Yakıt (Lt) *</label>
-                            <input type="number" id="aracSonYakit" placeholder="0" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Sefer Sonu Km *</label>
-                            <input type="number" id="aracSonKm" placeholder="0" required>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="aracKaydet()">✅ Kaydet</button>
-                    <button class="btn btn-warning" onclick="aracSifirla()">🔄 Temizle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Araç Yakıt Takip Listesi</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih</th>
-                                    <th>Plaka</th>
-                                    <th>Şoför</th>
-                                    <th>Baş. Km</th>
-                                    <th>Baş. Yakıt</th>
-                                    <th>Eklenen</th>
-                                    <th>Top. Yakıt</th>
-                                    <th>Tüketilen</th>
-                                    <th>Son Km</th>
-                                    <th>Kat. Km</th>
-                                    <th>Sarfiyat</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="aracTable">
-                                <tr><td colspan="12" style="text-align: center; color: #6c757d;">Henüz kayıt yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="personel" class="tab-content">
-                <div class="form-section">
-                    <h3>👤 Personel Bilgileri Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Personel Adı Soyadı *</label>
-                            <input type="text" id="personelAd" placeholder="Personel Adı" required>
-                        </div>
-                        <div class="form-group">
-                            <label>TC Kimlik No</label>
-                            <input type="text" id="personelTC" placeholder="12345678901" maxlength="11">
-                        </div>
-                        <div class="form-group">
-                            <label>Telefon</label>
-                            <input type="tel" id="personelTel" placeholder="0555 555 55 55">
-                        </div>
-                        <div class="form-group">
-                            <label>Görev</label>
-                            <input type="text" id="personelGorev" placeholder="Ör: Şoför, Memur">
-                        </div>
-                    </div>
-                    <button class="btn btn-success" onclick="personelKaydet()">✅ Personel Kaydet</button>
-                    <button class="btn btn-warning" onclick="personelSifirla()">🔄 Temizle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Personel Listesi</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Ad Soyad</th>
-                                    <th>TC</th>
-                                    <th>Telefon</th>
-                                    <th>Görev</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="personelListTable">
-                                <tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz personel kaydı yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>📅 Personel Günlük Devam Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tarih *</label>
-                            <input type="date" id="devamTarih" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Personel *</label>
-                            <select id="devamPersonel" required>
-                                <option value="">Seçiniz</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Giriş Saati</label>
-                            <input type="time" id="devamGiris">
-                        </div>
-                        <div class="form-group">
-                            <label>Çıkış Saati</label>
-                            <input type="time" id="devamCikis">
-                        </div>
-                    </div>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="devamIzinli"> İzinli</label>
-                        <label><input type="checkbox" id="devamRaporlu"> Raporlu</label>
-                        <label><input type="checkbox" id="devamGorevde" onchange="toggleGorevYeri()"> Görevde</label>
-                    </div>
-                    <div class="form-group hidden" id="gorevYeriDiv" style="margin-top: 15px;">
-                        <label>Görev Yeri *</label>
-                        <input type="text" id="devamGorevYeri" placeholder="Görev yeri giriniz">
-                    </div>
-                    <button class="btn btn-primary" onclick="devamKaydet()" style="margin-top: 15px;">✅ Devam Kaydet</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Personel Devam Listesi</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih</th>
-                                    <th>Personel</th>
-                                    <th>Giriş</th>
-                                    <th>Çıkış</th>
-                                    <th>Çalışma Süresi</th>
-                                    <th>Durum</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="devamTable">
-                                <tr><td colspan="7" style="text-align: center; color: #6c757d;">Henüz devam kaydı yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="giderler" class="tab-content">
-                <div class="form-section">
-                    <h3>💸 Gider Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tarih *</label>
-                            <input type="date" id="giderTarih" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gider Türü *</label>
-                            <select id="giderTur" required>
-                                <option value="">Seçiniz</option>
-                                <option value="Mutfak Masrafı">Mutfak Masrafı</option>
-                                <option value="Kırtasiye Masrafı">Kırtasiye Masrafı</option>
-                                <option value="Malzeme Alımı">Malzeme Alımı</option>
-                                <option value="Bakım/Onarım">Bakım/Onarım</option>
-                                <option value="Tamir Ücreti">Tamir Ücreti</option>
-                                <option value="Yakıt">Yakıt</option>
-                                <option value="Personel Maaşı">Personel Maaşı</option>
-                                <option value="Elektrik">Elektrik</option>
-                                <option value="Su">Su</option>
-                                <option value="Diğer">Diğer</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tutar (₺) *</label>
-                            <input type="number" id="giderTutar" placeholder="0.00" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Açıklama</label>
-                            <textarea id="giderAciklama" rows="1" placeholder="Detay açıklama..."></textarea>
-                        </div>
-                    </div>
-                    <button class="btn btn-danger" onclick="giderKaydet()">✅ Gider Kaydet</button>
-                    <button class="btn btn-warning" onclick="giderSifirla()">🔄 Temizle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Gider Listesi</h3>
-                    <div class="summary-grid" style="margin-bottom: 20px;">
-                        <div class="summary-item gider">
-                            <label>Toplam Gider</label>
-                            <div class="value" id="toplamGider">0 ₺</div>
-                        </div>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih</th>
-                                    <th>Gider Türü</th>
-                                    <th>Tutar</th>
-                                    <th>Açıklama</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="giderTable">
-                                <tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz gider kaydı yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="gelirler" class="tab-content">
-                <div class="form-section">
-                    <h3>💰 Gelir Kaydı</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tarih *</label>
-                            <input type="date" id="gelirTarih" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gelir Türü *</label>
-                            <select id="gelirTur" required>
-                                <option value="">Seçiniz</option>
-                                <option value="Nakliye Ücreti">Nakliye Ücreti</option>
-                                <option value="Ambar Kirası">Ambar Kirası</option>
-                                <option value="Ürün Satışı">Ürün Satışı</option>
-                                <option value="Hizmet Bedeli">Hizmet Bedeli</option>
-                                <option value="Diğer">Diğer</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Müşteri/Firma *</label>
-                            <input type="text" id="gelirMusteri" placeholder="Firma Adı" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Tutar (₺) *</label>
-                            <input type="number" id="gelirTutar" placeholder="0.00" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Açıklama</label>
-                            <textarea id="gelirAciklama" rows="1" placeholder="Detay açıklama..."></textarea>
-                        </div>
-                    </div>
-                    <button class="btn btn-success" onclick="gelirKaydet()">✅ Gelir Kaydet</button>
-                    <button class="btn btn-warning" onclick="gelirSifirla()">🔄 Temizle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Gelir Listesi</h3>
-                    <div class="summary-grid" style="margin-bottom: 20px;">
-                        <div class="summary-item gelir">
-                            <label>Toplam Gelir</label>
-                            <div class="value" id="toplamGelir">0 ₺</div>
-                        </div>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih</th>
-                                    <th>Gelir Türü</th>
-                                    <th>Müşteri/Firma</th>
-                                    <th>Tutar</th>
-                                    <th>Açıklama</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gelirTable">
-                                <tr><td colspan="6" style="text-align: center; color: #6c757d;">Henüz gelir kaydı yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="kasa" class="tab-content">
-                <div class="kasa-display">
-                    <h3 style="margin-bottom: 5px;">💰 GÜNCEL KASA BAKİYESİ</h3>
-                    <h2 id="kasaBakiye">0.00 ₺</h2>
-                    <p style="opacity: 0.9;">Son güncelleme: <span id="kasaGuncelleme">-</span></p>
-                </div>
-
-                <div class="form-section">
-                    <h3>🏦 Açılış Bakiyesi Belirle</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Açılış Bakiyesi (₺) *</label>
-                            <input type="number" id="kasaAcilis" placeholder="0.00" step="0.01">
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="kasaAcilisKaydet()">✅ Açılış Bakiyesi Kaydet</button>
-                    <p style="margin-top: 10px; color: #6c757d; font-size: 13px;">
-                        ⚠️ Not: Bu değer, mevcut tüm gelir ve giderlerin üzerine eklenir.
-                    </p>
-                </div>
-
-                <div class="summary-grid">
-                    <div class="summary-item gelir">
-                        <label>Toplam Gelir</label>
-                        <div class="value" id="kasaToplamGelir">0 ₺</div>
-                    </div>
-                    <div class="summary-item gider">
-                        <label>Toplam Gider</label>
-                        <div class="value" id="kasaToplamGider">0 ₺</div>
-                    </div>
-                    <div class="summary-item">
-                        <label>Net Kar/Zarar</label>
-                        <div class="value" id="kasaNetKar">0 ₺</div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Kasa Hareketleri</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Tarih</th>
-                                    <th>İşlem Türü</th>
-                                    <th>Kategori</th>
-                                    <th>Açıklama</th>
-                                    <th>Gelir</th>
-                                    <th>Gider</th>
-                                    <th>Bakiye</th>
-                                </tr>
-                            </thead>
-                            <tbody id="kasaHareketTable">
-                                <tr><td colspan="7" style="text-align: center; color: #6c757d;">Henüz işlem yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="raporlar" class="tab-content">
-                <div class="filter-section">
-                    <h4>📅 Rapor Filtresi</h4>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Başlangıç Tarihi</label>
-                            <input type="date" id="raporBasTarih">
-                        </div>
-                        <div class="form-group">
-                            <label>Bitiş Tarihi</label>
-                            <input type="date" id="raporBitTarih">
-                        </div>
-                        <div class="form-group">
-                            <label>Rapor Türü</label>
-                            <select id="raporTur">
-                                <option value="tesis">Tesis Giriş/Çıkış</option>
-                                <option value="arac">Araç Yakıt Sarfiyat</option>
-                                <option value="personel">Personel Devam</option>
-                                <option value="gelir">Gelir</option>
-                                <option value="gider">Gider</option>
-                                <option value="kasa">Kasa Özet</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="raporOlustur()">📊 Rapor Oluştur</button>
-                    <button class="btn btn-success" onclick="raporIndir()">💾 Excel İndir</button>
-                </div>
-
-                <div id="raporSonuc" class="report-section" style="display: none;">
-                    <h4>📋 Rapor Sonuçları</h4>
-                    <div id="raporIcerik"></div>
-                </div>
-            </div>
-
-            <div id="ayarlar" class="tab-content">
-                <div class="form-section">
-                    <h3>🚗 Araç Yönetimi</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Araç Plakası *</label>
-                            <input type="text" id="yeniAracPlaka" placeholder="34 ABC 123">
-                        </div>
-                        <div class="form-group">
-                            <label>Marka/Model</label>
-                            <input type="text" id="yeniAracModel" placeholder="Ford Transit">
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="aracEkle()">➕ Araç Ekle</button>
-                </div>
-
-                <div class="form-section">
-                    <h3>📋 Kayıtlı Araçlar</h3>
-                    <div style="overflow-x: auto;">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Plaka</th>
-                                    <th>Marka/Model</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody id="aracListTable">
-                                <tr><td colspan="3" style="text-align: center; color: #6c757d;">Henüz araç kaydı yok</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>💾 Veri Yönetimi</h3>
-                    <p style="margin-top: 15px; color: #6c757d; font-size: 13px;">
-                        Verileriniz artık Supabase veritabanında güvende. Yedekleme ve veri silme işlemlerini Supabase paneliniz üzerinden yapmalısınız.
-                    </p>
-                </div>
-            </div>
+          </div>
         </div>
+
+        <div id="personel" class="tab-content">
+          <div class="form-section">
+            <h3>👤 Personel Bilgileri Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Personel Adı Soyadı *</label>
+                <input
+                  type="text"
+                  id="personelAd"
+                  placeholder="Personel Adı"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>TC Kimlik No</label>
+                <input
+                  type="text"
+                  id="personelTC"
+                  placeholder="12345678901"
+                  maxlength="11"
+                />
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input
+                  type="tel"
+                  id="personelTel"
+                  placeholder="0555 555 55 55"
+                />
+              </div>
+              <div class="form-group">
+                <label>Görev</label>
+                <input
+                  type="text"
+                  id="personelGorev"
+                  placeholder="Ör: Şoför, Memur"
+                />
+              </div>
+            </div>
+            <button class="btn btn-success" onclick="personelKaydet()">
+              ✅ Personel Kaydet
+            </button>
+            <button class="btn btn-warning" onclick="personelSifirla()">
+              🔄 Temizle
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Personel Listesi</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ad Soyad</th>
+                    <th>TC</th>
+                    <th>Telefon</th>
+                    <th>Görev</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="personelListTable">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: #6c757d">
+                      Henüz personel kaydı yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>📅 Personel Günlük Devam Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tarih *</label>
+                <input type="date" id="devamTarih" required />
+              </div>
+              <div class="form-group">
+                <label>Personel *</label>
+                <select id="devamPersonel" required>
+                  <option value="">Seçiniz</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Giriş Saati</label>
+                <input type="time" id="devamGiris" />
+              </div>
+              <div class="form-group">
+                <label>Çıkış Saati</label>
+                <input type="time" id="devamCikis" />
+              </div>
+            </div>
+            <div class="checkbox-group">
+              <label><input type="checkbox" id="devamIzinli" /> İzinli</label>
+              <label><input type="checkbox" id="devamRaporlu" /> Raporlu</label>
+              <label
+                ><input
+                  type="checkbox"
+                  id="devamGorevde"
+                  onchange="toggleGorevYeri()"
+                />
+                Görevde</label
+              >
+            </div>
+            <div
+              class="form-group hidden"
+              id="gorevYeriDiv"
+              style="margin-top: 15px"
+            >
+              <label>Görev Yeri *</label>
+              <input
+                type="text"
+                id="devamGorevYeri"
+                placeholder="Görev yeri giriniz"
+              />
+            </div>
+            <button
+              class="btn btn-primary"
+              onclick="devamKaydet()"
+              style="margin-top: 15px"
+            >
+              ✅ Devam Kaydet
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Personel Devam Listesi</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>Personel</th>
+                    <th>Giriş</th>
+                    <th>Çıkış</th>
+                    <th>Çalışma Süresi</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="devamTable">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: #6c757d">
+                      Henüz devam kaydı yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="giderler" class="tab-content">
+          <div class="form-section">
+            <h3>💸 Gider Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tarih *</label>
+                <input type="date" id="giderTarih" required />
+              </div>
+              <div class="form-group">
+                <label>Gider Türü *</label>
+                <select id="giderTur" required>
+                  <option value="">Seçiniz</option>
+                  <option value="Mutfak Masrafı">Mutfak Masrafı</option>
+                  <option value="Kırtasiye Masrafı">Kırtasiye Masrafı</option>
+                  <option value="Malzeme Alımı">Malzeme Alımı</option>
+                  <option value="Bakım/Onarım">Bakım/Onarım</option>
+                  <option value="Tamir Ücreti">Tamir Ücreti</option>
+                  <option value="Yakıt">Yakıt</option>
+                  <option value="Personel Maaşı">Personel Maaşı</option>
+                  <option value="Elektrik">Elektrik</option>
+                  <option value="Su">Su</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tutar (₺) *</label>
+                <input
+                  type="number"
+                  id="giderTutar"
+                  placeholder="0.00"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Açıklama</label>
+                <textarea
+                  id="giderAciklama"
+                  rows="1"
+                  placeholder="Detay açıklama..."
+                ></textarea>
+              </div>
+            </div>
+            <button class="btn btn-danger" onclick="giderKaydet()">
+              ✅ Gider Kaydet
+            </button>
+            <button class="btn btn-warning" onclick="giderSifirla()">
+              🔄 Temizle
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Gider Listesi</h3>
+            <div class="summary-grid" style="margin-bottom: 20px">
+              <div class="summary-item gider">
+                <label>Toplam Gider</label>
+                <div class="value" id="toplamGider">0 ₺</div>
+              </div>
+            </div>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>Gider Türü</th>
+                    <th>Tutar</th>
+                    <th>Açıklama</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="giderTable">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: #6c757d">
+                      Henüz gider kaydı yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="gelirler" class="tab-content">
+          <div class="form-section">
+            <h3>💰 Gelir Kaydı</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Tarih *</label>
+                <input type="date" id="gelirTarih" required />
+              </div>
+              <div class="form-group">
+                <label>Gelir Türü *</label>
+                <select id="gelirTur" required>
+                  <option value="">Seçiniz</option>
+                  <option value="Nakliye Ücreti">Nakliye Ücreti</option>
+                  <option value="Ambar Kirası">Ambar Kirası</option>
+                  <option value="Ürün Satışı">Ürün Satışı</option>
+                  <option value="Hizmet Bedeli">Hizmet Bedeli</option>
+                  <option value="Diğer">Diğer</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Müşteri/Firma *</label>
+                <input
+                  type="text"
+                  id="gelirMusteri"
+                  placeholder="Firma Adı"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Tutar (₺) *</label>
+                <input
+                  type="number"
+                  id="gelirTutar"
+                  placeholder="0.00"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Açıklama</label>
+                <textarea
+                  id="gelirAciklama"
+                  rows="1"
+                  placeholder="Detay açıklama..."
+                ></textarea>
+              </div>
+            </div>
+            <button class="btn btn-success" onclick="gelirKaydet()">
+              ✅ Gelir Kaydet
+            </button>
+            <button class="btn btn-warning" onclick="gelirSifirla()">
+              🔄 Temizle
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Gelir Listesi</h3>
+            <div class="summary-grid" style="margin-bottom: 20px">
+              <div class="summary-item gelir">
+                <label>Toplam Gelir</label>
+                <div class="value" id="toplamGelir">0 ₺</div>
+              </div>
+            </div>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>Gelir Türü</th>
+                    <th>Müşteri/Firma</th>
+                    <th>Tutar</th>
+                    <th>Açıklama</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="gelirTable">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: #6c757d">
+                      Henüz gelir kaydı yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="kasa" class="tab-content">
+          <div class="kasa-display">
+            <h3 style="margin-bottom: 5px">💰 GÜNCEL KASA BAKİYESİ</h3>
+            <h2 id="kasaBakiye">0.00 ₺</h2>
+            <p style="opacity: 0.9">
+              Son güncelleme: <span id="kasaGuncelleme">-</span>
+            </p>
+          </div>
+
+          <div class="form-section">
+            <h3>🏦 Açılış Bakiyesi Belirle</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Açılış Bakiyesi (₺) *</label>
+                <input
+                  type="number"
+                  id="kasaAcilis"
+                  placeholder="0.00"
+                  step="0.01"
+                />
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="kasaAcilisKaydet()">
+              ✅ Açılış Bakiyesi Kaydet
+            </button>
+            <p style="margin-top: 10px; color: #6c757d; font-size: 13px">
+              ⚠️ Not: Bu değer, mevcut tüm gelir ve giderlerin üzerine eklenir.
+            </p>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item gelir">
+              <label>Toplam Gelir</label>
+              <div class="value" id="kasaToplamGelir">0 ₺</div>
+            </div>
+            <div class="summary-item gider">
+              <label>Toplam Gider</label>
+              <div class="value" id="kasaToplamGider">0 ₺</div>
+            </div>
+            <div class="summary-item">
+              <label>Net Kar/Zarar</label>
+              <div class="value" id="kasaNetKar">0 ₺</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Kasa Hareketleri</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tarih</th>
+                    <th>İşlem Türü</th>
+                    <th>Kategori</th>
+                    <th>Açıklama</th>
+                    <th>Gelir</th>
+                    <th>Gider</th>
+                    <th>Bakiye</th>
+                  </tr>
+                </thead>
+                <tbody id="kasaHareketTable">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: #6c757d">
+                      Henüz işlem yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="raporlar" class="tab-content">
+          <div class="filter-section">
+            <h4>📅 Rapor Filtresi</h4>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Başlangıç Tarihi</label>
+                <input type="date" id="raporBasTarih" />
+              </div>
+              <div class="form-group">
+                <label>Bitiş Tarihi</label>
+                <input type="date" id="raporBitTarih" />
+              </div>
+              <div class="form-group">
+                <label>Rapor Türü</label>
+                <select id="raporTur">
+                  <option value="tesis">Tesis Giriş/Çıkış</option>
+                  <option value="arac">Araç Yakıt Sarfiyat</option>
+                  <option value="personel">Personel Devam</option>
+                  <option value="gelir">Gelir</option>
+                  <option value="gider">Gider</option>
+                  <option value="kasa">Kasa Özet</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="raporOlustur()">
+              📊 Rapor Oluştur
+            </button>
+            <button class="btn btn-success" onclick="raporIndir()">
+              💾 Excel İndir
+            </button>
+          </div>
+
+          <div id="raporSonuc" class="report-section" style="display: none">
+            <h4>📋 Rapor Sonuçları</h4>
+            <div id="raporIcerik"></div>
+          </div>
+        </div>
+
+        <div id="ayarlar" class="tab-content">
+          <div class="form-section">
+            <h3>🚗 Araç Yönetimi</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Araç Plakası *</label>
+                <input
+                  type="text"
+                  id="yeniAracPlaka"
+                  placeholder="34 ABC 123"
+                />
+              </div>
+              <div class="form-group">
+                <label>Marka/Model</label>
+                <input
+                  type="text"
+                  id="yeniAracModel"
+                  placeholder="Ford Transit"
+                />
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="aracEkle()">
+              ➕ Araç Ekle
+            </button>
+          </div>
+
+          <div class="form-section">
+            <h3>📋 Kayıtlı Araçlar</h3>
+            <div style="overflow-x: auto">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Plaka</th>
+                    <th>Marka/Model</th>
+                    <th>İşlem</th>
+                  </tr>
+                </thead>
+                <tbody id="aracListTable">
+                  <tr>
+                    <td colspan="3" style="text-align: center; color: #6c757d">
+                      Henüz araç kaydı yok
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>💾 Veri Yönetimi</h3>
+            <p style="margin-top: 15px; color: #6c757d; font-size: 13px">
+              Verileriniz artık Supabase veritabanında güvende. Yedekleme ve
+              veri silme işlemlerini Supabase paneliniz üzerinden yapmalısınız.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        // =======================================================
-        // SUPABASE BAĞLANTISI
-        // =======================================================
-        const SUPABASE_URL = 'https://axjkmikillicvvwtaart.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4amttaWtpbGxpY3Z2d3RhYXJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTIyMzEsImV4cCI6MjA3Nzg2ODIzMX0.7qhrV3_g8W0082TzzSrhKSh6z7g0o33tXIMdYb1jFLg';
+      // =======================================================
+      // SUPABASE BAĞLANTISI
+      // =======================================================
+      const SUPABASE_URL = "https://axjkmikillicvvwtaart.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4amttaWtpbGxpY3Z2d3RhYXJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyOTIyMzEsImV4cCI6MjA3Nzg2ODIzMX0.7qhrV3_g8W0082TzzSrhKSh6z7g0o33tXIMdYb1jFLg";
 
-        const { createClient } = supabase;
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { createClient } = supabase;
+      const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        console.log('Supabase istemcisi başlatıldı.');
+      console.log("Supabase istemcisi başlatıldı.");
 
-        // =======================================================
-        // YARDIMCI FONKSİYONLAR
-        // =======================================================
+      // =======================================================
+      // YARDIMCI FONKSİYONLAR
+      // =======================================================
 
-        // Spinner (Yükleniyor) Göster/Gizle
-        function showSpinner() {
-            document.getElementById('spinnerOverlay').style.display = 'flex';
+      // Spinner (Yükleniyor) Göster/Gizle
+      function showSpinner() {
+        document.getElementById("spinnerOverlay").style.display = "flex";
+      }
+      function hideSpinner() {
+        document.getElementById("spinnerOverlay").style.display = "none";
+      }
+
+      // Genel Supabase Hata Gösterici
+      function handleSupabaseError(error, context) {
+        console.error(`Supabase Hatası (${context}):`, error.message);
+        alert(`Bir hata oluştu (${context}): ${error.message}`);
+        hideSpinner();
+      }
+
+      // =======================================================
+      // YENİ TABLO İSİMLERİ (Supabase'deki gibi)
+      // =======================================================
+      const TABLO = {
+        TESIS: "tesis",
+        ARAC_YAKIT: "arac_yakit",
+        PERSONEL: "personel",
+        PERSONEL_DEVAM: "personel_devam",
+        GIDERLER: "giderler",
+        GELIRLER: "gelirler",
+        ARAC_LISTESI: "arac_listesi",
+        KASA_AYARLARI: "kasa_ayarlari", // Kasa açılış bakiyesi için
+      };
+
+      // =======================================================
+      // GENEL UYGULAMA MANTIĞI
+      // =======================================================
+
+      // Sekme değiştirme
+      async function showTab(tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const contents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        contents.forEach((content) => content.classList.remove("active"));
+
+        tabs.forEach((tab) => {
+          if (tab.textContent.includes(getTabLabel(tabName))) {
+            tab.classList.add("active");
+          }
+        });
+
+        document.getElementById(tabName).classList.add("active");
+
+        // Sekme değiştiğinde verileri ASENKRON olarak yenile
+        showSpinner();
+        try {
+          if (tabName === "dashboard") await dashboardGuncelle();
+          if (tabName === "tesis") await tesisListele();
+          if (tabName === "arac") {
+            await aracListele();
+            await aracSelectDoldur();
+          }
+          if (tabName === "personel") {
+            await personelListele();
+            await devamListele();
+            await personelSelectDoldur();
+          }
+          if (tabName === "giderler") await giderListele();
+          if (tabName === "gelirler") await gelirListele();
+          if (tabName === "kasa") await kasaGuncelle();
+          if (tabName === "ayarlar") await aracListesiGoster();
+        } catch (error) {
+          console.error("Sekme yüklenirken hata:", error);
+        } finally {
+          hideSpinner();
         }
-        function hideSpinner() {
-            document.getElementById('spinnerOverlay').style.display = 'none';
-        }
+      }
 
-        // Genel Supabase Hata Gösterici
-        function handleSupabaseError(error, context) {
-            console.error(`Supabase Hatası (${context}):`, error.message);
-            alert(`Bir hata oluştu (${context}): ${error.message}`);
-            hideSpinner();
-        }
-
-        // =======================================================
-        // YENİ TABLO İSİMLERİ (Supabase'deki gibi)
-        // =======================================================
-        const TABLO = {
-            TESIS: 'tesis',
-            ARAC_YAKIT: 'arac_yakit',
-            PERSONEL: 'personel',
-            PERSONEL_DEVAM: 'personel_devam',
-            GIDERLER: 'giderler',
-            GELIRLER: 'gelirler',
-            ARAC_LISTESI: 'arac_listesi',
-            KASA_AYARLARI: 'kasa_ayarlari' // Kasa açılış bakiyesi için
+      function getTabLabel(tabName) {
+        const labels = {
+          dashboard: "Dashboard",
+          tesis: "Tesis",
+          arac: "Araç",
+          personel: "Personel",
+          giderler: "Giderler",
+          gelirler: "Gelirler",
+          kasa: "Kasa",
+          raporlar: "Raporlar",
+          ayarlar: "Ayarlar",
         };
+        return labels[tabName] || tabName;
+      }
 
+      // Sayfa yüklendiğinde
+      window.onload = async function () {
+        console.log("Sayfa yüklendi");
+        // Bugünün tarihini ayarla
+        const bugun = new Date().toISOString().split("T")[0];
+        const simdikiZaman = new Date().toISOString().slice(0, 16);
 
-        // =======================================================
-        // GENEL UYGULAMA MANTIĞI
-        // =======================================================
+        document.getElementById("tesisTarih").value = simdikiZaman;
+        document.getElementById("aracTarih").value = bugun;
+        document.getElementById("devamTarih").value = bugun;
+        document.getElementById("giderTarih").value = bugun;
+        document.getElementById("gelirTarih").value = bugun;
+        document.getElementById("raporBasTarih").value = bugun;
+        document.getElementById("raporBitTarih").value = bugun;
 
-        // Sekme değiştirme
-        async function showTab(tabName) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            tabs.forEach(tab => {
-                if(tab.textContent.includes(getTabLabel(tabName))) {
-                    tab.classList.add('active');
-                }
-            });
-            
-            document.getElementById(tabName).classList.add('active');
+        showSpinner();
+        try {
+          // Sadece aktif olan (dashboard) ve
+          // ortak kullanılan (select) verileri çek
+          await dashboardGuncelle();
+          await aracSelectDoldur();
+          await personelSelectDoldur();
+          // await aracListesiGoster(); // Ayarlar'a tıklanmadıkça gerek yok
+        } catch (error) {
+          console.error("İlk yükleme hatası:", error);
+        } finally {
+          hideSpinner();
+          console.log("Sayfa hazır!");
+        }
+      };
 
-            // Sekme değiştiğinde verileri ASENKRON olarak yenile
-            showSpinner();
-            try {
-                if (tabName === 'dashboard') await dashboardGuncelle();
-                if (tabName === 'tesis') await tesisListele();
-                if (tabName === 'arac') { await aracListele(); await aracSelectDoldur(); }
-                if (tabName === 'personel') { await personelListele(); await devamListele(); await personelSelectDoldur(); }
-                if (tabName === 'giderler') await giderListele();
-                if (tabName === 'gelirler') await gelirListele();
-                if (tabName === 'kasa') await kasaGuncelle();
-                if (tabName === 'ayarlar') await aracListesiGoster();
-            } catch (error) {
-                console.error('Sekme yüklenirken hata:', error);
-            } finally {
-                hideSpinner();
-            }
+      // =======================================================
+      // DASHBOARD FONKSİYONLARI
+      // =======================================================
+      async function dashboardGuncelle() {
+        console.log("Dashboard güncelleniyor...");
+        const bugun = new Date(); // Tarih objesi olarak al
+        const bugunStr = bugun.toISOString().split("T")[0]; // '2025-11-05' (Mevcut tarihe göre)
+
+        const yil = bugun.getFullYear();
+        const ayIndex = bugun.getMonth(); // 0'dan başlar (Kasım = 10)
+        const ayinIlkGunu = new Date(yil, ayIndex, 1)
+          .toISOString()
+          .split("T")[0]; // ör: '2025-11-01'
+        const sonrakiAyinIlkGunu = new Date(yil, ayIndex + 1, 1)
+          .toISOString()
+          .split("T")[0]; // ör: '2025-12-01'
+
+        try {
+          // Tesis giriş/çıkış sayısı (bugün)
+          const { count: tesisCount, error: tesisError } = await _supabase
+            .from(TABLO.TESIS)
+            .select("*", { count: "exact", head: true })
+            .gte("tarih", `${bugunStr}T00:00:00`)
+            .lte("tarih", `${bugunStr}T23:59:59`);
+          if (tesisError) throw tesisError;
+          document.getElementById("dashTesisCount").textContent =
+            tesisCount || 0;
+
+          // Kasa bakiyesi (Hesaplama)
+          const { data: gelirData, error: gelirError } = await _supabase
+            .from(TABLO.GELIRLER)
+            .select("tutar");
+          if (gelirError) throw gelirError;
+          const { data: giderData, error: giderError } = await _supabase
+            .from(TABLO.GIDERLER)
+            .select("tutar");
+          if (giderError) throw giderError;
+          const { data: kasaAyar, error: ayarError } = await _supabase
+            .from(TABLO.KASA_AYARLARI)
+            .select("acilis_bakiyesi")
+            .eq("id", 1)
+            .maybeSingle();
+          if (ayarError) throw ayarError;
+
+          const toplamGelir = gelirData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          const toplamGider = giderData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          const acilisBakiyesi = kasaAyar
+            ? parseFloat(kasaAyar.acilis_bakiyesi || 0)
+            : 0;
+          const kasaBakiye = acilisBakiyesi + toplamGelir - toplamGider;
+
+          document.getElementById("dashKasa").textContent =
+            kasaBakiye.toFixed(2) + " ₺";
+
+          // Araç sayısı
+          const { count: aracCount, error: aracError } = await _supabase
+            .from(TABLO.ARAC_LISTESI)
+            .select("*", { count: "exact", head: true });
+          if (aracError) throw aracError;
+          document.getElementById("dashAracCount").textContent = aracCount || 0;
+
+          // Personel sayısı
+          const { count: personelCount, error: pError } = await _supabase
+            .from(TABLO.PERSONEL)
+            .select("*", { count: "exact", head: true });
+          if (pError) throw pError;
+          document.getElementById("dashPersonelCount").textContent =
+            personelCount || 0;
+
+          // Bugünkü gelir/gider
+          const { data: bugunGelirData, error: bgError } = await _supabase
+            .from(TABLO.GELIRLER)
+            .select("tutar")
+            .eq("tarih", bugunStr);
+          if (bgError) throw bgError;
+          const { data: bugunGiderData, error: bggError } = await _supabase
+            .from(TABLO.GIDERLER)
+            .select("tutar")
+            .eq("tarih", bugunStr);
+          if (bggError) throw bggError;
+
+          const bugunGelir = bugunGelirData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          const bugunGider = bugunGiderData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+
+          document.getElementById("dashBugunGelir").textContent =
+            bugunGelir.toFixed(2) + " ₺";
+          document.getElementById("dashBugunGider").textContent =
+            bugunGider.toFixed(2) + " ₺";
+
+          // Aylık gelir/gider (DÜZELTİLDİ: .like yerine .gte ve .lt kullanıldı)
+          const { data: aylikGelirData, error: agError } = await _supabase
+            .from(TABLO.GELIRLER)
+            .select("tutar")
+            .gte("tarih", ayinIlkGunu)
+            .lt("tarih", sonrakiAyinIlkGunu);
+          if (agError) throw agError;
+
+          const { data: aylikGiderData, error: aggError } = await _supabase
+            .from(TABLO.GIDERLER)
+            .select("tutar")
+            .gte("tarih", ayinIlkGunu)
+            .lt("tarih", sonrakiAyinIlkGunu);
+          if (aggError) throw aggError;
+
+          const aylikGelir = aylikGelirData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          const aylikGider = aylikGiderData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+
+          document.getElementById("dashAylikGelir").textContent =
+            aylikGelir.toFixed(2) + " ₺";
+          document.getElementById("dashAylikGider").textContent =
+            aylikGider.toFixed(2) + " ₺";
+        } catch (error) {
+          handleSupabaseError(error, "Dashboard Güncelleme");
+        }
+      }
+
+      // =======================================================
+      // TESİS GİRİŞ/ÇIKIŞ FONKSİYONLARI
+      // =======================================================
+      async function tesisKaydet() {
+        console.log("Tesis kaydet çalıştı");
+        showSpinner();
+        const tarih = document.getElementById("tesisTarih").value;
+        const islem = document.getElementById("tesisIslem").value;
+        const plaka = document.getElementById("tesisPlaka").value;
+        const sofor = document.getElementById("tesisSofor").value;
+        const urun = document.getElementById("tesisUrun").value;
+        const miktar = document.getElementById("tesisMiktar").value;
+        const birim = document.getElementById("tesisBirim").value;
+        const nereden = document.getElementById("tesisNereden").value;
+        const nereye = document.getElementById("tesisNereye").value;
+
+        if (
+          !tarih ||
+          !islem ||
+          !plaka ||
+          !sofor ||
+          !urun ||
+          !miktar ||
+          !birim ||
+          !nereden ||
+          !nereye
+        ) {
+          alert("Lütfen tüm zorunlu alanları doldurun!");
+          hideSpinner();
+          return;
         }
 
-        function getTabLabel(tabName) {
-            const labels = {
-                'dashboard': 'Dashboard',
-                'tesis': 'Tesis',
-                'arac': 'Araç',
-                'personel': 'Personel',
-                'giderler': 'Giderler',
-                'gelirler': 'Gelirler',
-                'kasa': 'Kasa',
-                'raporlar': 'Raporlar',
-                'ayarlar': 'Ayarlar'
-            };
-            return labels[tabName] || tabName;
+        const { error } = await _supabase.from(TABLO.TESIS).insert({
+          tarih,
+          islem,
+          plaka,
+          sofor,
+          urun,
+          miktar,
+          birim,
+          nereden,
+          nereye,
+        });
+
+        if (error) {
+          hideSpinner();
+          handleSupabaseError(error, "Tesis Kaydet");
+        } else {
+          alert("✅ Tesis giriş/çıkış kaydı başarıyla eklendi!");
+          tesisSifirla();
+          await tesisListele(); // Listeyi yenile
+          await dashboardGuncelle();
+          hideSpinner(); // Her şey bitince spinner'ı gizle
+        }
+      }
+
+      function tesisSifirla() {
+        document.getElementById("tesisTarih").value = new Date()
+          .toISOString()
+          .slice(0, 16);
+        document.getElementById("tesisIslem").value = "";
+        document.getElementById("tesisPlaka").value = "";
+        document.getElementById("tesisSofor").value = "";
+        document.getElementById("tesisUrun").value = "";
+        document.getElementById("tesisMiktar").value = "";
+        document.getElementById("tesisBirim").value = "";
+        document.getElementById("tesisNereden").value = "";
+        document.getElementById("tesisNereye").value = "";
+      }
+
+      async function tesisListele() {
+        // showSpinner(); // Zaten showTab içinde çağrılıyor
+        const { data, error } = await _supabase
+          .from(TABLO.TESIS)
+          .select("*")
+          .order("tarih", { ascending: false }); // En yeni en üstte
+
+        // hideSpinner(); // showTab sonunda gizlenecek
+        if (error) return handleSupabaseError(error, "Tesis Listele");
+
+        const tbody = document.getElementById("tesisTable");
+
+        if (data.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="9" style="text-align: center; color: #6c757d;">Henüz kayıt yok</td></tr>';
+          return;
         }
 
-        // Sayfa yüklendiğinde
-        window.onload = async function() {
-            console.log('Sayfa yüklendi');
-            // Bugünün tarihini ayarla
-            const bugun = new Date().toISOString().split('T')[0];
-            const simdikiZaman = new Date().toISOString().slice(0, 16);
-            
-            document.getElementById('tesisTarih').value = simdikiZaman;
-            document.getElementById('aracTarih').value = bugun;
-            document.getElementById('devamTarih').value = bugun;
-            document.getElementById('giderTarih').value = bugun;
-            document.getElementById('gelirTarih').value = bugun;
-            document.getElementById('raporBasTarih').value = bugun;
-            document.getElementById('raporBitTarih').value = bugun;
-
-            showSpinner();
-            try {
-                // Sadece aktif olan (dashboard) ve 
-                // ortak kullanılan (select) verileri çek
-                await dashboardGuncelle();
-                await aracSelectDoldur();
-                await personelSelectDoldur();
-                // await aracListesiGoster(); // Ayarlar'a tıklanmadıkça gerek yok
-            } catch (error) {
-                console.error('İlk yükleme hatası:', error);
-            } finally {
-                hideSpinner();
-                console.log('Sayfa hazır!');
-            }
-        };
-
-        // =======================================================
-        // DASHBOARD FONKSİYONLARI
-        // =======================================================
-        async function dashboardGuncelle() {
-            console.log('Dashboard güncelleniyor...');
-            const bugun = new Date().toISOString().split('T')[0];
-            const ay = new Date().toISOString().slice(0, 7);
-
-            try {
-                // Tesis giriş/çıkış sayısı (bugün)
-                const { count: tesisCount, error: tesisError } = await _supabase
-                    .from(TABLO.TESIS)
-                    .select('*', { count: 'exact', head: true })
-                    .gte('tarih', `${bugun}T00:00:00`)
-                    .lte('tarih', `${bugun}T23:59:59`);
-                if(tesisError) throw tesisError;
-                document.getElementById('dashTesisCount').textContent = tesisCount || 0;
-
-                // Kasa bakiyesi (Hesaplama)
-                const { data: gelirData, error: gelirError } = await _supabase.from(TABLO.GELIRLER).select('tutar');
-                if(gelirError) throw gelirError;
-                const { data: giderData, error: giderError } = await _supabase.from(TABLO.GIDERLER).select('tutar');
-                if(giderError) throw giderError;
-                const { data: kasaAyar, error: ayarError } = await _supabase.from(TABLO.KASA_AYARLARI).select('acilis_bakiyesi').eq('id', 1).maybeSingle();
-                if(ayarError) throw ayarError;
-                
-                const toplamGelir = gelirData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                const toplamGider = giderData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                const acilisBakiyesi = kasaAyar ? parseFloat(kasaAyar.acilis_bakiyesi || 0) : 0;
-                const kasaBakiye = acilisBakiyesi + toplamGelir - toplamGider;
-                
-                document.getElementById('dashKasa').textContent = kasaBakiye.toFixed(2) + ' ₺';
-
-                // Araç sayısı
-                const { count: aracCount, error: aracError } = await _supabase.from(TABLO.ARAC_LISTESI).select('*', { count: 'exact', head: true });
-                if(aracError) throw aracError;
-                document.getElementById('dashAracCount').textContent = aracCount || 0;
-
-                // Personel sayısı
-                const { count: personelCount, error: pError } = await _supabase.from(TABLO.PERSONEL).select('*', { count: 'exact', head: true });
-                if(pError) throw pError;
-                document.getElementById('dashPersonelCount').textContent = personelCount || 0;
-
-                // Bugünkü gelir/gider
-                const { data: bugunGelirData, error: bgError } = await _supabase.from(TABLO.GELIRLER).select('tutar').eq('tarih', bugun);
-                if(bgError) throw bgError;
-                const { data: bugunGiderData, error: bggError } = await _supabase.from(TABLO.GIDERLER).select('tutar').eq('tarih', bugun);
-                if(bggError) throw bggError;
-
-                const bugunGelir = bugunGelirData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                const bugunGider = bugunGiderData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-
-                document.getElementById('dashBugunGelir').textContent = bugunGelir.toFixed(2) + ' ₺';
-                document.getElementById('dashBugunGider').textContent = bugunGider.toFixed(2) + ' ₺';
-
-                // Aylık gelir/gider
-                const { data: aylikGelirData, error: agError } = await _supabase.from(TABLO.GELIRLER).select('tutar').like('tarih', `${ay}-%`);
-                if(agError) throw agError;
-                const { data: aylikGiderData, error: aggError } = await _supabase.from(TABLO.GIDERLER).select('tutar').like('tarih', `${ay}-%`);
-                if(aggError) throw aggError;
-                
-                const aylikGelir = aylikGelirData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                const aylikGider = aylikGiderData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-
-                document.getElementById('dashAylikGelir').textContent = aylikGelir.toFixed(2) + ' ₺';
-                document.getElementById('dashAylikGider').textContent = aylikGider.toFixed(2) + ' ₺';
-            } catch (error) {
-                handleSupabaseError(error, 'Dashboard Güncelleme');
-            }
-        }
-
-        // =======================================================
-        // TESİS GİRİŞ/ÇIKIŞ FONKSİYONLARI
-        // =======================================================
-        async function tesisKaydet() {
-            console.log('Tesis kaydet çalıştı');
-            showSpinner();
-            const tarih = document.getElementById('tesisTarih').value;
-            const islem = document.getElementById('tesisIslem').value;
-            const plaka = document.getElementById('tesisPlaka').value;
-            const sofor = document.getElementById('tesisSofor').value;
-            const urun = document.getElementById('tesisUrun').value;
-            const miktar = document.getElementById('tesisMiktar').value;
-            const birim = document.getElementById('tesisBirim').value;
-            const nereden = document.getElementById('tesisNereden').value;
-            const nereye = document.getElementById('tesisNereye').value;
-
-            if (!tarih || !islem || !plaka || !sofor || !urun || !miktar || !birim || !nereden || !nereye) {
-                alert('Lütfen tüm zorunlu alanları doldurun!');
-                hideSpinner();
-                return;
-            }
-
-            const { error } = await _supabase.from(TABLO.TESIS).insert({
-                tarih, islem, plaka, sofor, urun, miktar, birim, nereden, nereye
-            });
-            
-            if (error) {
-                hideSpinner();
-                handleSupabaseError(error, 'Tesis Kaydet');
-            } else {
-                alert('✅ Tesis giriş/çıkış kaydı başarıyla eklendi!');
-                tesisSifirla();
-                await tesisListele(); // Listeyi yenile
-                await dashboardGuncelle();
-                hideSpinner(); // Her şey bitince spinner'ı gizle
-            }
-        }
-
-        function tesisSifirla() {
-            document.getElementById('tesisTarih').value = new Date().toISOString().slice(0, 16);
-            document.getElementById('tesisIslem').value = '';
-            document.getElementById('tesisPlaka').value = '';
-            document.getElementById('tesisSofor').value = '';
-            document.getElementById('tesisUrun').value = '';
-            document.getElementById('tesisMiktar').value = '';
-            document.getElementById('tesisBirim').value = '';
-            document.getElementById('tesisNereden').value = '';
-            document.getElementById('tesisNereye').value = '';
-        }
-
-        async function tesisListele() {
-            // showSpinner(); // Zaten showTab içinde çağrılıyor
-            const { data, error } = await _supabase
-                .from(TABLO.TESIS)
-                .select('*')
-                .order('tarih', { ascending: false }); // En yeni en üstte
-
-            // hideSpinner(); // showTab sonunda gizlenecek
-            if (error) return handleSupabaseError(error, 'Tesis Listele');
-
-            const tbody = document.getElementById('tesisTable');
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #6c757d;">Henüz kayıt yok</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+        tbody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
-                    <td>${new Date(item.tarih).toLocaleString('tr-TR')}</td>
-                    <td><span style="background: ${item.islem === 'Giriş' ? '#38ef7d' : '#f5576c'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px;">${item.islem}</span></td>
+                    <td>${new Date(item.tarih).toLocaleString("tr-TR")}</td>
+                    <td><span style="background: ${
+                      item.islem === "Giriş" ? "#38ef7d" : "#f5576c"
+                    }; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px;">${
+              item.islem
+            }</span></td>
                     <td>${item.plaka}</td>
                     <td>${item.sofor}</td>
                     <td>${item.urun}</td>
                     <td>${item.miktar} ${item.birim}</td>
                     <td>${item.nereden}</td>
                     <td>${item.nereye}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="tesisSil(${item.id})">🗑️</button></td>
+                    <td><button class="btn btn-danger btn-small" onclick="tesisSil(${
+                      item.id
+                    })">🗑️</button></td>
                 </tr>
-            `).join('');
-        }
+            `
+          )
+          .join("");
+      }
 
-        async function tesisSil(id) {
-            if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.TESIS).delete().eq('id', id);
-            
-            if (error) {
-                hideSpinner();
-                handleSupabaseError(error, 'Tesis Sil');
-            } else {
-                alert('Kayıt silindi.');
-                await tesisListele();
-                await dashboardGuncelle();
-                hideSpinner();
-            }
-        }
+      async function tesisSil(id) {
+        if (!confirm("Bu kaydı silmek istediğinizden emin misiniz?")) return;
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.TESIS)
+          .delete()
+          .eq("id", id);
 
-        // =======================================================
-        // ARAÇ YAKIT TAKİBİ FONKSİYONLARI
-        // =======================================================
-        function aracSecimDegisti() {
-            const secim = document.getElementById('aracSecim').value;
-            const manuelDiv = document.getElementById('aracPlakaManuelDiv');
-            
-            if(secim === 'manuel') {
-                manuelDiv.classList.remove('hidden');
-            } else {
-                manuelDiv.classList.add('hidden');
-            }
+        if (error) {
+          hideSpinner();
+          handleSupabaseError(error, "Tesis Sil");
+        } else {
+          alert("Kayıt silindi.");
+          await tesisListele();
+          await dashboardGuncelle();
+          hideSpinner();
         }
+      }
 
-        async function aracKaydet() {
+      // =======================================================
+      // ARAÇ YAKIT TAKİBİ FONKSİYONLARI
+      // =======================================================
+      function aracSecimDegisti() {
+        const secim = document.getElementById("aracSecim").value;
+        const manuelDiv = document.getElementById("aracPlakaManuelDiv");
+
+        if (secim === "manuel") {
+          manuelDiv.classList.remove("hidden");
+        } else {
+          manuelDiv.classList.add("hidden");
+        }
+      }
+
+      async function aracKaydet() {
             console.log('Araç kaydet çalıştı');
             showSpinner();
             const tarih = document.getElementById('aracTarih').value;
@@ -1378,9 +1700,19 @@
             const sarfiyat = katetdigiKm > 0 ? (tuketimLt / katetdigiKm * 100).toFixed(2) : 0;
             const sarfiyatYuzde = katetdigiKm > 0 ? Math.round((tuketimLt / katetdigiKm) * 100) : 0;
 
+            // DÜZELTME: Sütun adları alt tireli (snake_case) olarak güncellendi
             const { error } = await _supabase.from(TABLO.ARAC_YAKIT).insert({
-                tarih, plaka, sofor, basKm, basYakit, eklenenYakit, yakitKm, 
-                toplamYakit, sonYakit, sonKm, katetdigiKm, sarfiyat, sarfiyatYuzde
+                tarih, plaka, sofor, 
+                bas_km: basKm,
+                bas_yakit: basYakit,
+                eklenen_yakit: eklenenYakit,
+                yakit_km: yakitKm,
+                son_yakit: sonYakit,
+                son_km: sonKm,
+                toplam_yakit: toplamYakit,
+                katetdigi_km: katetdigiKm,
+                sarfiyat: sarfiyat,
+                sarfiyat_yuzde: sarfiyatYuzde
             });
             
             hideSpinner();
@@ -1393,21 +1725,23 @@
             }
         }
 
-        function aracSifirla() {
-            document.getElementById('aracTarih').value = new Date().toISOString().split('T')[0];
-            document.getElementById('aracSecim').value = '';
-            document.getElementById('aracPlakaManuel').value = '';
-            document.getElementById('aracPlakaManuelDiv').classList.add('hidden');
-            document.getElementById('aracSofor').value = '';
-            document.getElementById('aracBasKm').value = '';
-            document.getElementById('aracBasYakit').value = '';
-            document.getElementById('aracEklenenYakit').value = '0';
-            document.getElementById('aracYakitKm').value = '';
-            document.getElementById('aracSonYakit').value = '';
-            document.getElementById('aracSonKm').value = '';
-        }
+      function aracSifirla() {
+        document.getElementById("aracTarih").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("aracSecim").value = "";
+        document.getElementById("aracPlakaManuel").value = "";
+        document.getElementById("aracPlakaManuelDiv").classList.add("hidden");
+        document.getElementById("aracSofor").value = "";
+        document.getElementById("aracBasKm").value = "";
+        document.getElementById("aracBasYakit").value = "";
+        document.getElementById("aracEklenenYakit").value = "0";
+        document.getElementById("aracYakitKm").value = "";
+        document.getElementById("aracSonYakit").value = "";
+        document.getElementById("aracSonKm").value = "";
+      }
 
-        async function aracListele() {
+      async function aracListele() {
             const { data, error } = await _supabase
                 .from(TABLO.ARAC_YAKIT)
                 .select('*')
@@ -1422,156 +1756,184 @@
                 return;
             }
 
+            // DÜZELTME: item.özellikleri alt tireli (snake_case) olarak güncellendi
             tbody.innerHTML = data.map(item => `
                 <tr>
                     <td>${item.tarih}</td>
                     <td>${item.plaka}</td>
                     <td>${item.sofor}</td>
-                    <td>${item.basKm}</td>
-                    <td>${item.basYakit} Lt</td>
-                    <td>${item.eklenenYakit} Lt</td>
-                    <td>${item.toplamYakit.toFixed(2)} Lt</td>
-                    <td>${item.sonYakit} Lt</td>
-                    <td>${item.sonKm}</td>
-                    <td><strong>${item.katetdigiKm} Km</strong></td>
-                    <td><span style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px;">${item.sarfiyat} Lt/100Km = %${item.sarfiyatYuzde || Math.round(item.sarfiyat)}</span></td>
+                    <td>${item.bas_km}</td>
+                    <td>${item.bas_yakit} Lt</td>
+                    <td>${item.eklenen_yakit} Lt</td>
+                    <td>${item.toplam_yakit.toFixed(2)} Lt</td>
+                    <td>${item.son_yakit} Lt</td>
+                    <td>${item.son_km}</td>
+                    <td><strong>${item.katetdigi_km} Km</strong></td>
+                    <td><span style="background: #667eea; color: white; padding: 4px 8px; border-radius: 4px;">${item.sarfiyat} Lt/100Km = %${item.sarfiyat_yuzde || Math.round(item.sarfiyat)}</span></td>
                     <td><button class="btn btn-danger btn-small" onclick="aracSil(${item.id})">🗑️</button></td>
                 </tr>
             `).join('');
         }
 
-        async function aracSil(id) {
-            if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.ARAC_YAKIT).delete().eq('id', id);
-            
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Araç Yakıt Sil');
-            } else {
-                alert('Kayıt silindi.');
-                await aracListele();
-            }
+      async function aracSil(id) {
+        if (!confirm("Bu kaydı silmek istediğinizden emin misiniz?")) return;
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.ARAC_YAKIT)
+          .delete()
+          .eq("id", id);
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Araç Yakıt Sil");
+        } else {
+          alert("Kayıt silindi.");
+          await aracListele();
+        }
+      }
+
+      async function aracSelectDoldur() {
+        const { data, error } = await _supabase
+          .from(TABLO.ARAC_LISTESI)
+          .select("plaka, model");
+
+        if (error) return handleSupabaseError(error, "Araç Listesi Çekme");
+
+        const select = document.getElementById("aracSecim");
+
+        let html = '<option value="">Seçiniz</option>';
+        html += '<option value="manuel">📝 Manuel Giriş</option>';
+
+        data.forEach((arac) => {
+          html += `<option value="${arac.plaka}">${arac.plaka}${
+            arac.model ? " - " + arac.model : ""
+          }</option>`;
+        });
+
+        select.innerHTML = html;
+      }
+
+      // =======================================================
+      // PERSONEL TAKİP FONKSİYONLARI
+      // =======================================================
+      async function personelKaydet() {
+        console.log("Personel kaydet çalıştı");
+        showSpinner();
+        const ad = document.getElementById("personelAd").value.trim();
+        const tc = document.getElementById("personelTC").value.trim() || null;
+        const tel = document.getElementById("personelTel").value.trim() || null;
+        const gorev =
+          document.getElementById("personelGorev").value.trim() || null;
+
+        if (!ad) {
+          alert("Lütfen personel adını giriniz!");
+          hideSpinner();
+          return;
         }
 
-        async function aracSelectDoldur() {
-            const { data, error } = await _supabase.from(TABLO.ARAC_LISTESI).select('plaka, model');
-            
-            if (error) return handleSupabaseError(error, 'Araç Listesi Çekme');
+        const { error } = await _supabase.from(TABLO.PERSONEL).insert({
+          ad,
+          tc,
+          tel,
+          gorev,
+        });
 
-            const select = document.getElementById('aracSecim');
-            
-            let html = '<option value="">Seçiniz</option>';
-            html += '<option value="manuel">📝 Manuel Giriş</option>';
-            
-            data.forEach(arac => {
-                html += `<option value="${arac.plaka}">${arac.plaka}${arac.model ? ' - ' + arac.model : ''}</option>`;
-            });
-            
-            select.innerHTML = html;
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Personel Kaydet");
+        } else {
+          alert("✅ Personel kaydı başarıyla eklendi!");
+          personelSifirla();
+          await personelListele();
+          await personelSelectDoldur();
+          await dashboardGuncelle();
+        }
+      }
+
+      function personelSifirla() {
+        document.getElementById("personelAd").value = "";
+        document.getElementById("personelTC").value = "";
+        document.getElementById("personelTel").value = "";
+        document.getElementById("personelGorev").value = "";
+      }
+
+      async function personelListele() {
+        const { data, error } = await _supabase
+          .from(TABLO.PERSONEL)
+          .select("*");
+        if (error) return handleSupabaseError(error, "Personel Listele");
+
+        const tbody = document.getElementById("personelListTable");
+
+        if (data.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz personel kaydı yok</td></tr>';
+          return;
         }
 
-        // =======================================================
-        // PERSONEL TAKİP FONKSİYONLARI
-        // =======================================================
-        async function personelKaydet() {
-            console.log('Personel kaydet çalıştı');
-            showSpinner();
-            const ad = document.getElementById('personelAd').value.trim();
-            const tc = document.getElementById('personelTC').value.trim() || null;
-            const tel = document.getElementById('personelTel').value.trim() || null;
-            const gorev = document.getElementById('personelGorev').value.trim() || null;
-
-            if (!ad) {
-                alert('Lütfen personel adını giriniz!');
-                hideSpinner();
-                return;
-            }
-
-            const { error } = await _supabase.from(TABLO.PERSONEL).insert({
-                ad, tc, tel, gorev
-            });
-            
-            hideSpinner();
-            if(error) {
-                handleSupabaseError(error, 'Personel Kaydet');
-            } else {
-                alert('✅ Personel kaydı başarıyla eklendi!');
-                personelSifirla();
-                await personelListele();
-                await personelSelectDoldur();
-                await dashboardGuncelle();
-            }
-        }
-
-        function personelSifirla() {
-            document.getElementById('personelAd').value = '';
-            document.getElementById('personelTC').value = '';
-            document.getElementById('personelTel').value = '';
-            document.getElementById('personelGorev').value = '';
-        }
-
-        async function personelListele() {
-            const { data, error } = await _supabase.from(TABLO.PERSONEL).select('*');
-            if (error) return handleSupabaseError(error, 'Personel Listele');
-
-            const tbody = document.getElementById('personelListTable');
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz personel kaydı yok</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+        tbody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
                     <td>${item.ad}</td>
-                    <td>${item.tc || '-'}</td>
-                    <td>${item.tel || '-'}</td>
-                    <td>${item.gorev || '-'}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="personelSil(${item.id})">🗑️</button></td>
+                    <td>${item.tc || "-"}</td>
+                    <td>${item.tel || "-"}</td>
+                    <td>${item.gorev || "-"}</td>
+                    <td><button class="btn btn-danger btn-small" onclick="personelSil(${
+                      item.id
+                    })">🗑️</button></td>
                 </tr>
-            `).join('');
+            `
+          )
+          .join("");
+      }
+
+      async function personelSil(id) {
+        if (!confirm("Bu personeli silmek istediğinizden emin misiniz?"))
+          return;
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.PERSONEL)
+          .delete()
+          .eq("id", id);
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Personel Sil");
+        } else {
+          alert("Personel silindi.");
+          await personelListele();
+          await personelSelectDoldur();
+          await dashboardGuncelle();
         }
+      }
 
-        async function personelSil(id) {
-            if (!confirm('Bu personeli silmek istediğinizden emin misiniz?')) return;
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.PERSONEL).delete().eq('id', id);
+      async function personelSelectDoldur() {
+        const { data, error } = await _supabase
+          .from(TABLO.PERSONEL)
+          .select("ad");
 
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Personel Sil');
-            } else {
-                alert('Personel silindi.');
-                await personelListele();
-                await personelSelectDoldur();
-                await dashboardGuncelle();
-            }
+        if (error) return handleSupabaseError(error, "Personel Select Doldur");
+
+        const select = document.getElementById("devamPersonel");
+        select.innerHTML =
+          '<option value="">Seçiniz</option>' +
+          data.map((p) => `<option value="${p.ad}">${p.ad}</option>`).join("");
+      }
+
+      function toggleGorevYeri() {
+        const gorevdeCheckbox = document.getElementById("devamGorevde");
+        const gorevYeriDiv = document.getElementById("gorevYeriDiv");
+
+        if (gorevdeCheckbox.checked) {
+          gorevYeriDiv.classList.remove("hidden");
+        } else {
+          gorevYeriDiv.classList.add("hidden");
+          document.getElementById("devamGorevYeri").value = "";
         }
+      }
 
-        async function personelSelectDoldur() {
-            const { data, error } = await _supabase.from(TABLO.PERSONEL).select('ad');
-
-            if (error) return handleSupabaseError(error, 'Personel Select Doldur');
-
-            const select = document.getElementById('devamPersonel');
-            select.innerHTML = '<option value="">Seçiniz</option>' + 
-                data.map(p => `<option value="${p.ad}">${p.ad}</option>`).join('');
-        }
-
-        function toggleGorevYeri() {
-            const gorevdeCheckbox = document.getElementById('devamGorevde');
-            const gorevYeriDiv = document.getElementById('gorevYeriDiv');
-            
-            if (gorevdeCheckbox.checked) {
-                gorevYeriDiv.classList.remove('hidden');
-            } else {
-                gorevYeriDiv.classList.add('hidden');
-                document.getElementById('devamGorevYeri').value = '';
-            }
-        }
-
-        async function devamKaydet() {
+      async function devamKaydet() {
             console.log('Devam kaydet çalıştı');
             showSpinner();
             const tarih = document.getElementById('devamTarih').value;
@@ -1612,8 +1974,10 @@
                 }
             }
 
+            // DÜZELTME: calismaSuresi -> calisma_suresi oldu
             const { error } = await _supabase.from(TABLO.PERSONEL_DEVAM).insert({
-                tarih, personel, giris, cikis, durum, calismaSuresi
+                tarih, personel, giris, cikis, durum, 
+                calisma_suresi: calismaSuresi
             });
             
             hideSpinner();
@@ -1625,20 +1989,21 @@
                 await devamListele();
             }
         }
+      function devamSifirla() {
+        document.getElementById("devamTarih").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("devamPersonel").value = "";
+        document.getElementById("devamGiris").value = "";
+        document.getElementById("devamCikis").value = "";
+        document.getElementById("devamIzinli").checked = false;
+        document.getElementById("devamRaporlu").checked = false;
+        document.getElementById("devamGorevde").checked = false;
+        document.getElementById("gorevYeriDiv").classList.add("hidden");
+        document.getElementById("devamGorevYeri").value = "";
+      }
 
-        function devamSifirla() {
-            document.getElementById('devamTarih').value = new Date().toISOString().split('T')[0];
-            document.getElementById('devamPersonel').value = '';
-            document.getElementById('devamGiris').value = '';
-            document.getElementById('devamCikis').value = '';
-            document.getElementById('devamIzinli').checked = false;
-            document.getElementById('devamRaporlu').checked = false;
-            document.getElementById('devamGorevde').checked = false;
-            document.getElementById('gorevYeriDiv').classList.add('hidden');
-            document.getElementById('devamGorevYeri').value = '';
-        }
-
-        async function devamListele() {
+      async function devamListele() {
             const { data, error } = await _supabase
                 .from(TABLO.PERSONEL_DEVAM)
                 .select('*')
@@ -1653,406 +2018,521 @@
                 return;
             }
 
+            // DÜZELTME: item.calisma_suresi oldu
             tbody.innerHTML = data.map(item => `
                 <tr>
                     <td>${item.tarih}</td>
                     <td>${item.personel}</td>
                     <td>${item.giris || '-'}</td>
                     <td>${item.cikis || '-'}</td>
-                    <td>${item.calismaSuresi}</td>
+                    <td>${item.calisma_suresi}</td>
                     <td><span style="background: ${item.durum.includes('İzinli') ? '#f5576c' : item.durum.includes('Raporlu') ? '#fa709a' : item.durum.includes('Görevde') ? '#4facfe' : '#38ef7d'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px;">${item.durum}</span></td>
                     <td><button class="btn btn-danger btn-small" onclick="devamSil(${item.id})">🗑️</button></td>
                 </tr>
             `).join('');
         }
 
-        async function devamSil(id) {
-            if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) return;
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.PERSONEL_DEVAM).delete().eq('id', id);
-            
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Personel Devam Sil');
-            } else {
-                alert('Kayıt silindi.');
-                await devamListele();
-            }
+      async function devamSil(id) {
+        if (!confirm("Bu kaydı silmek istediğinizden emin misiniz?")) return;
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.PERSONEL_DEVAM)
+          .delete()
+          .eq("id", id);
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Personel Devam Sil");
+        } else {
+          alert("Kayıt silindi.");
+          await devamListele();
+        }
+      }
+
+      // =======================================================
+      // GİDER FONKSİYONLARI
+      // =======================================================
+      async function giderKaydet() {
+        console.log("Gider kaydet çalıştı");
+        showSpinner();
+        const tarih = document.getElementById("giderTarih").value;
+        const tur = document.getElementById("giderTur").value;
+        const tutar = parseFloat(document.getElementById("giderTutar").value);
+        const aciklama = document.getElementById("giderAciklama").value || null;
+
+        if (!tarih || !tur || isNaN(tutar) || tutar <= 0) {
+          alert(
+            "Lütfen tüm zorunlu alanları doldurun ve geçerli bir tutar girin!"
+          );
+          hideSpinner();
+          return;
         }
 
-        // =======================================================
-        // GİDER FONKSİYONLARI
-        // =======================================================
-        async function giderKaydet() {
-            console.log('Gider kaydet çalıştı');
-            showSpinner();
-            const tarih = document.getElementById('giderTarih').value;
-            const tur = document.getElementById('giderTur').value;
-            const tutar = parseFloat(document.getElementById('giderTutar').value);
-            const aciklama = document.getElementById('giderAciklama').value || null;
+        const { error } = await _supabase.from(TABLO.GIDERLER).insert({
+          tarih,
+          tur,
+          tutar,
+          aciklama,
+        });
 
-            if (!tarih || !tur || isNaN(tutar) || tutar <= 0) {
-                alert('Lütfen tüm zorunlu alanları doldurun ve geçerli bir tutar girin!');
-                hideSpinner();
-                return;
-            }
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Gider Kaydet");
+        } else {
+          alert("✅ Gider kaydı başarıyla eklendi!");
+          giderSifirla();
+          await giderListele();
+          await dashboardGuncelle(); // Dashboard'u ve kasayı günceller
+        }
+      }
 
-            const { error } = await _supabase.from(TABLO.GIDERLER).insert({
-                tarih, tur, tutar, aciklama
-            });
-            
-            hideSpinner();
-            if(error) {
-                handleSupabaseError(error, 'Gider Kaydet');
-            } else {
-                alert('✅ Gider kaydı başarıyla eklendi!');
-                giderSifirla();
-                await giderListele();
-                await dashboardGuncelle(); // Dashboard'u ve kasayı günceller
-            }
+      function giderSifirla() {
+        document.getElementById("giderTarih").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("giderTur").value = "";
+        document.getElementById("giderTutar").value = "";
+        document.getElementById("giderAciklama").value = "";
+      }
+
+      async function giderListele() {
+        const { data, error } = await _supabase
+          .from(TABLO.GIDERLER)
+          .select("*")
+          .order("tarih", { ascending: false });
+
+        if (error) return handleSupabaseError(error, "Gider Listele");
+
+        const tbody = document.getElementById("giderTable");
+
+        const toplam = data.reduce(
+          (sum, item) => sum + parseFloat(item.tutar || 0),
+          0
+        );
+        document.getElementById("toplamGider").textContent =
+          toplam.toFixed(2) + " ₺";
+
+        if (data.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz gider kaydı yok</td></tr>';
+          return;
         }
 
-        function giderSifirla() {
-            document.getElementById('giderTarih').value = new Date().toISOString().split('T')[0];
-            document.getElementById('giderTur').value = '';
-            document.getElementById('giderTutar').value = '';
-            document.getElementById('giderAciklama').value = '';
-        }
-
-        async function giderListele() {
-            const { data, error } = await _supabase
-                .from(TABLO.GIDERLER)
-                .select('*')
-                .order('tarih', { ascending: false });
-            
-            if (error) return handleSupabaseError(error, 'Gider Listele');
-
-            const tbody = document.getElementById('giderTable');
-            
-            const toplam = data.reduce((sum, item) => sum + parseFloat(item.tutar || 0), 0);
-            document.getElementById('toplamGider').textContent = toplam.toFixed(2) + ' ₺';
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6c757d;">Henüz gider kaydı yok</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+        tbody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
                     <td>${item.tarih}</td>
                     <td>${item.tur}</td>
-                    <td><strong style="color: #f5576c;">${parseFloat(item.tutar).toFixed(2)} ₺</strong></td>
-                    <td>${item.aciklama || '-'}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="giderSil(${item.id})">🗑️</button></td>
+                    <td><strong style="color: #f5576c;">${parseFloat(
+                      item.tutar
+                    ).toFixed(2)} ₺</strong></td>
+                    <td>${item.aciklama || "-"}</td>
+                    <td><button class="btn btn-danger btn-small" onclick="giderSil(${
+                      item.id
+                    })">🗑️</button></td>
                 </tr>
-            `).join('');
+            `
+          )
+          .join("");
+      }
+
+      async function giderSil(id) {
+        if (
+          !confirm(
+            "Bu kaydı silmek istediğinizden emin misiniz? Kasa bakiyesi güncellenecektir."
+          )
+        )
+          return;
+
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.GIDERLER)
+          .delete()
+          .eq("id", id);
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Gider Sil");
+        } else {
+          alert("Gider kaydı silindi.");
+          await giderListele();
+          await dashboardGuncelle();
+          if (document.getElementById("kasa").classList.contains("active")) {
+            await kasaGuncelle(); // Kasa sekmesi açıksa onu da yenile
+          }
+        }
+      }
+
+      // =======================================================
+      // GELİR FONKSİYONLARI
+      // =======================================================
+      async function gelirKaydet() {
+        console.log("Gelir kaydet çalıştı");
+        showSpinner();
+        const tarih = document.getElementById("gelirTarih").value;
+        const tur = document.getElementById("gelirTur").value;
+        const musteri = document.getElementById("gelirMusteri").value;
+        const tutar = parseFloat(document.getElementById("gelirTutar").value);
+        const aciklama = document.getElementById("gelirAciklama").value || null;
+
+        if (!tarih || !tur || !musteri || isNaN(tutar) || tutar <= 0) {
+          alert(
+            "Lütfen tüm zorunlu alanları doldurun ve geçerli bir tutar girin!"
+          );
+          hideSpinner();
+          return;
         }
 
-        async function giderSil(id) {
-            if (!confirm('Bu kaydı silmek istediğinizden emin misiniz? Kasa bakiyesi güncellenecektir.')) return;
-            
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.GIDERLER).delete().eq('id', id);
+        const { error } = await _supabase.from(TABLO.GELIRLER).insert({
+          tarih,
+          tur,
+          musteri,
+          tutar,
+          aciklama,
+        });
 
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Gider Sil');
-            } else {
-                alert('Gider kaydı silindi.');
-                await giderListele();
-                await dashboardGuncelle();
-                if(document.getElementById('kasa').classList.contains('active')) {
-                    await kasaGuncelle(); // Kasa sekmesi açıksa onu da yenile
-                }
-            }
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Gelir Kaydet");
+        } else {
+          alert("✅ Gelir kaydı başarıyla eklendi!");
+          gelirSifirla();
+          await gelirListele();
+          await dashboardGuncelle();
+        }
+      }
+
+      function gelirSifirla() {
+        document.getElementById("gelirTarih").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("gelirTur").value = "";
+        document.getElementById("gelirMusteri").value = "";
+        document.getElementById("gelirTutar").value = "";
+        document.getElementById("gelirAciklama").value = "";
+      }
+
+      async function gelirListele() {
+        const { data, error } = await _supabase
+          .from(TABLO.GELIRLER)
+          .select("*")
+          .order("tarih", { ascending: false });
+
+        if (error) return handleSupabaseError(error, "Gelir Listele");
+
+        const tbody = document.getElementById("gelirTable");
+
+        const toplam = data.reduce(
+          (sum, item) => sum + parseFloat(item.tutar || 0),
+          0
+        );
+        document.getElementById("toplamGelir").textContent =
+          toplam.toFixed(2) + " ₺";
+
+        if (data.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="6" style="text-align: center; color: #6c757d;">Henüz gelir kaydı yok</td></tr>';
+          return;
         }
 
-        // =======================================================
-        // GELİR FONKSİYONLARI
-        // =======================================================
-        async function gelirKaydet() {
-            console.log('Gelir kaydet çalıştı');
-            showSpinner();
-            const tarih = document.getElementById('gelirTarih').value;
-            const tur = document.getElementById('gelirTur').value;
-            const musteri = document.getElementById('gelirMusteri').value;
-            const tutar = parseFloat(document.getElementById('gelirTutar').value);
-            const aciklama = document.getElementById('gelirAciklama').value || null;
-
-            if (!tarih || !tur || !musteri || isNaN(tutar) || tutar <= 0) {
-                alert('Lütfen tüm zorunlu alanları doldurun ve geçerli bir tutar girin!');
-                hideSpinner();
-                return;
-            }
-
-            const { error } = await _supabase.from(TABLO.GELIRLER).insert({
-                tarih, tur, musteri, tutar, aciklama
-            });
-            
-            hideSpinner();
-            if(error) {
-                handleSupabaseError(error, 'Gelir Kaydet');
-            } else {
-                alert('✅ Gelir kaydı başarıyla eklendi!');
-                gelirSifirla();
-                await gelirListele();
-                await dashboardGuncelle();
-            }
-        }
-
-        function gelirSifirla() {
-            document.getElementById('gelirTarih').value = new Date().toISOString().split('T')[0];
-            document.getElementById('gelirTur').value = '';
-            document.getElementById('gelirMusteri').value = '';
-            document.getElementById('gelirTutar').value = '';
-            document.getElementById('gelirAciklama').value = '';
-        }
-
-        async function gelirListele() {
-            const { data, error } = await _supabase
-                .from(TABLO.GELIRLER)
-                .select('*')
-                .order('tarih', { ascending: false });
-
-            if (error) return handleSupabaseError(error, 'Gelir Listele');
-            
-            const tbody = document.getElementById('gelirTable');
-            
-            const toplam = data.reduce((sum, item) => sum + parseFloat(item.tutar || 0), 0);
-            document.getElementById('toplamGelir').textContent = toplam.toFixed(2) + ' ₺';
-
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d;">Henüz gelir kaydı yok</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(item => `
+        tbody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
                     <td>${item.tarih}</td>
                     <td>${item.tur}</td>
                     <td>${item.musteri}</td>
-                    <td><strong style="color: #38ef7d;">${parseFloat(item.tutar).toFixed(2)} ₺</strong></td>
-                    <td>${item.aciklama || '-'}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="gelirSil(${item.id})">🗑️</button></td>
+                    <td><strong style="color: #38ef7d;">${parseFloat(
+                      item.tutar
+                    ).toFixed(2)} ₺</strong></td>
+                    <td>${item.aciklama || "-"}</td>
+                    <td><button class="btn btn-danger btn-small" onclick="gelirSil(${
+                      item.id
+                    })">🗑️</button></td>
                 </tr>
-            `).join('');
+            `
+          )
+          .join("");
+      }
+
+      async function gelirSil(id) {
+        if (
+          !confirm(
+            "Bu kaydı silmek istediğinizden emin misiniz? Kasa bakiyesi güncellenecektir."
+          )
+        )
+          return;
+
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.GELIRLER)
+          .delete()
+          .eq("id", id);
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Gelir Sil");
+        } else {
+          alert("Gelir kaydı silindi.");
+          await gelirListele();
+          await dashboardGuncelle();
+          if (document.getElementById("kasa").classList.contains("active")) {
+            await kasaGuncelle(); // Kasa sekmesi açıksa onu da yenile
+          }
+        }
+      }
+
+      // =======================================================
+      // KASA FONKSİYONLARI
+      // =======================================================
+      async function kasaAcilisKaydet() {
+        const acilis = parseFloat(document.getElementById("kasaAcilis").value);
+
+        if (isNaN(acilis)) {
+          alert("Lütfen geçerli bir tutar giriniz!");
+          return;
         }
 
-        async function gelirSil(id) {
-            if (!confirm('Bu kaydı silmek istediğinizden emin misiniz? Kasa bakiyesi güncellenecektir.')) return;
-            
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.GELIRLER).delete().eq('id', id);
+        if (
+          !confirm(
+            `Açılış bakiyesi ${acilis.toFixed(
+              2
+            )} ₺ olarak kaydedilecek. Mevcut değerin üzerine yazılacak. Onaylıyor musunuz?`
+          )
+        )
+          return;
 
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Gelir Sil');
-            } else {
-                alert('Gelir kaydı silindi.');
-                await gelirListele();
-                await dashboardGuncelle();
-                if(document.getElementById('kasa').classList.contains('active')) {
-                    await kasaGuncelle(); // Kasa sekmesi açıksa onu da yenile
-                }
-            }
+        showSpinner();
+        // upsert: id=1 olan satır varsa güncelle, yoksa oluştur.
+        const { error } = await _supabase
+          .from(TABLO.KASA_AYARLARI)
+          .upsert(
+            {
+              id: 1,
+              acilis_bakiyesi: acilis,
+              guncelleme_tarih: new Date().toISOString(),
+            },
+            { onConflict: "id" }
+          );
+
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Kasa Açılış Kaydet");
+        } else {
+          alert("✅ Açılış bakiyesi başarıyla kaydedildi!");
+          document.getElementById("kasaAcilis").value = "";
+          await kasaGuncelle();
+          await dashboardGuncelle();
+        }
+      }
+
+      async function kasaGuncelle() {
+        // showSpinner(); // Zaten showTab içinde
+        let acilisBakiyesi = 0;
+        let guncelleme = "-";
+        try {
+          // 1. Verileri Çek
+          const { data: gelirData, error: gelirError } = await _supabase
+            .from(TABLO.GELIRLER)
+            .select("tutar");
+          if (gelirError) throw gelirError;
+          const { data: giderData, error: giderError } = await _supabase
+            .from(TABLO.GIDERLER)
+            .select("tutar");
+          if (giderError) throw giderError;
+          const { data: kasaAyar, error: ayarError } = await _supabase
+            .from(TABLO.KASA_AYARLARI)
+            .select("acilis_bakiyesi, guncelleme_tarih")
+            .eq("id", 1)
+            .maybeSingle();
+          if (ayarError) throw ayarError;
+
+          // 2. Hesaplamaları Yap
+          const toplamGelir = gelirData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          const toplamGider = giderData.reduce(
+            (sum, g) => sum + parseFloat(g.tutar || 0),
+            0
+          );
+          acilisBakiyesi = kasaAyar
+            ? parseFloat(kasaAyar.acilis_bakiyesi || 0)
+            : 0;
+          const bakiye = acilisBakiyesi + toplamGelir - toplamGider;
+          guncelleme = kasaAyar
+            ? new Date(kasaAyar.guncelleme_tarih).toLocaleString("tr-TR")
+            : "-";
+          const netKar = toplamGelir - toplamGider;
+
+          // 3. DOM'u Güncelle
+          document.getElementById("kasaBakiye").textContent =
+            bakiye.toFixed(2) + " ₺";
+          document.getElementById("kasaGuncelleme").textContent = guncelleme;
+          document.getElementById("kasaToplamGelir").textContent =
+            toplamGelir.toFixed(2) + " ₺";
+          document.getElementById("kasaToplamGider").textContent =
+            toplamGider.toFixed(2) + " ₺";
+          document.getElementById("kasaNetKar").textContent =
+            netKar.toFixed(2) + " ₺";
+
+          // 4. Hareket Listesini Güncelle
+          await kasaHareketListele(acilisBakiyesi); // Açılış bakiyesini parametre olarak gönder
+        } catch (error) {
+          handleSupabaseError(error, "Kasa Güncelleme");
+        }
+        // hideSpinner(); // showTab sonunda
+      }
+
+      async function kasaHareketListele(acilisBakiyesi) {
+        // Not: Bu fonksiyon artık kasaGuncelle içinden çağrılıyor.
+        const { data: gelirData, error: gelirError } = await _supabase
+          .from(TABLO.GELIRLER)
+          .select("*");
+        const { data: giderData, error: giderError } = await _supabase
+          .from(TABLO.GIDERLER)
+          .select("*");
+
+        if (gelirError || giderError) {
+          console.error(
+            "Kasa hareketleri çekilirken hata:",
+            gelirError || giderError
+          );
+          return;
         }
 
-        // =======================================================
-        // KASA FONKSİYONLARI
-        // =======================================================
-        async function kasaAcilisKaydet() {
-            const acilis = parseFloat(document.getElementById('kasaAcilis').value);
-            
-            if (isNaN(acilis)) {
-                alert('Lütfen geçerli bir tutar giriniz!');
-                return;
-            }
+        let hareketler = [];
 
-            if (!confirm(`Açılış bakiyesi ${acilis.toFixed(2)} ₺ olarak kaydedilecek. Mevcut değerin üzerine yazılacak. Onaylıyor musunuz?`)) return;
+        gelirData.forEach((g) => {
+          hareketler.push({
+            tarih: g.tarih,
+            tip: "Gelir",
+            kategori: g.tur,
+            aciklama: `${g.musteri} - ${g.aciklama || ""}`,
+            gelir: parseFloat(g.tutar),
+            gider: 0,
+          });
+        });
 
-            showSpinner();
-            // upsert: id=1 olan satır varsa güncelle, yoksa oluştur.
-            const { error } = await _supabase.from(TABLO.KASA_AYARLARI).upsert(
-                { id: 1, acilis_bakiyesi: acilis, guncelleme_tarih: new Date().toISOString() },
-                { onConflict: 'id' }
-            );
+        giderData.forEach((g) => {
+          hareketler.push({
+            tarih: g.tarih,
+            tip: "Gider",
+            kategori: g.tur,
+            aciklama: g.aciklama || "",
+            gelir: 0,
+            gider: parseFloat(g.tutar),
+          });
+        });
 
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Kasa Açılış Kaydet');
-            } else {
-                alert('✅ Açılış bakiyesi başarıyla kaydedildi!');
-                document.getElementById('kasaAcilis').value = '';
-                await kasaGuncelle();
-                await dashboardGuncelle();
-            }
+        // TARİHE GÖRE SIRALA (Eskiden yeniye - bakiye hesabı için)
+        hareketler.sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+
+        const tbody = document.getElementById("kasaHareketTable");
+
+        if (hareketler.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="7" style="text-align: center; color: #6c757d;">Henüz işlem yok</td></tr>';
+          return;
         }
 
-        async function kasaGuncelle() {
-            // showSpinner(); // Zaten showTab içinde
-            let acilisBakiyesi = 0;
-            let guncelleme = '-';
-            try {
-                // 1. Verileri Çek
-                const { data: gelirData, error: gelirError } = await _supabase.from(TABLO.GELIRLER).select('tutar');
-                if(gelirError) throw gelirError;
-                const { data: giderData, error: giderError } = await _supabase.from(TABLO.GIDERLER).select('tutar');
-                if(giderError) throw giderError;
-                const { data: kasaAyar, error: ayarError } = await _supabase.from(TABLO.KASA_AYARLARI).select('acilis_bakiyesi, guncelleme_tarih').eq('id', 1).maybeSingle();
-                if(ayarError) throw ayarError;
+        let bakiye = acilisBakiyesi;
 
-                // 2. Hesaplamaları Yap
-                const toplamGelir = gelirData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                const toplamGider = giderData.reduce((sum, g) => sum + parseFloat(g.tutar || 0), 0);
-                acilisBakiyesi = kasaAyar ? parseFloat(kasaAyar.acilis_bakiyesi || 0) : 0;
-                const bakiye = acilisBakiyesi + toplamGelir - toplamGider;
-                guncelleme = kasaAyar ? new Date(kasaAyar.guncelleme_tarih).toLocaleString('tr-TR') : '-';
-                const netKar = toplamGelir - toplamGider;
+        const tableRows = hareketler.map((item) => {
+          if (item.tip === "Gelir") {
+            bakiye += item.gelir;
+          } else {
+            bakiye -= item.gider;
+          }
 
-                // 3. DOM'u Güncelle
-                document.getElementById('kasaBakiye').textContent = bakiye.toFixed(2) + ' ₺';
-                document.getElementById('kasaGuncelleme').textContent = guncelleme;
-                document.getElementById('kasaToplamGelir').textContent = toplamGelir.toFixed(2) + ' ₺';
-                document.getElementById('kasaToplamGider').textContent = toplamGider.toFixed(2) + ' ₺';
-                document.getElementById('kasaNetKar').textContent = netKar.toFixed(2) + ' ₺';
-
-                // 4. Hareket Listesini Güncelle
-                await kasaHareketListele(acilisBakiyesi); // Açılış bakiyesini parametre olarak gönder
-            } catch (error) {
-                handleSupabaseError(error, 'Kasa Güncelleme');
-            }
-            // hideSpinner(); // showTab sonunda
-        }
-
-        async function kasaHareketListele(acilisBakiyesi) {
-            // Not: Bu fonksiyon artık kasaGuncelle içinden çağrılıyor.
-            const { data: gelirData, error: gelirError } = await _supabase.from(TABLO.GELIRLER).select('*');
-            const { data: giderData, error: giderError } = await _supabase.from(TABLO.GIDERLER).select('*');
-            
-            if (gelirError || giderError) {
-                console.error('Kasa hareketleri çekilirken hata:', gelirError || giderError);
-                return;
-            }
-
-            let hareketler = [];
-            
-            gelirData.forEach(g => {
-                hareketler.push({
-                    tarih: g.tarih,
-                    tip: 'Gelir',
-                    kategori: g.tur,
-                    aciklama: `${g.musteri} - ${g.aciklama || ''}`,
-                    gelir: parseFloat(g.tutar),
-                    gider: 0
-                });
-            });
-
-            giderData.forEach(g => {
-                hareketler.push({
-                    tarih: g.tarih,
-                    tip: 'Gider',
-                    kategori: g.tur,
-                    aciklama: g.aciklama || '',
-                    gelir: 0,
-                    gider: parseFloat(g.tutar)
-                });
-            });
-
-            // TARİHE GÖRE SIRALA (Eskiden yeniye - bakiye hesabı için)
-            hareketler.sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
-
-            const tbody = document.getElementById('kasaHareketTable');
-            
-            if (hareketler.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6c757d;">Henüz işlem yok</td></tr>';
-                return;
-            }
-
-            let bakiye = acilisBakiyesi;
-            
-            const tableRows = hareketler.map(item => {
-                if (item.tip === 'Gelir') {
-                    bakiye += item.gelir;
-                } else {
-                    bakiye -= item.gider;
-                }
-                
-                return `
+          return `
                 <tr>
                     <td>${item.tarih}</td>
-                    <td><span style="background: ${item.tip === 'Gelir' ? '#38ef7d' : '#f5576c'}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px;">${item.tip}</span></td>
+                    <td><span style="background: ${
+                      item.tip === "Gelir" ? "#38ef7d" : "#f5576c"
+                    }; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px;">${
+            item.tip
+          }</span></td>
                     <td>${item.kategori}</td>
-                    <td>${item.aciklama || '-'}</td>
-                    <td style="color: #38ef7d; font-weight: bold;">${item.gelir > 0 ? item.gelir.toFixed(2) + ' ₺' : '-'}</td>
-                    <td style="color: #f5576c; font-weight: bold;">${item.gider > 0 ? item.gider.toFixed(2) + ' ₺' : '-'}</td>
+                    <td>${item.aciklama || "-"}</td>
+                    <td style="color: #38ef7d; font-weight: bold;">${
+                      item.gelir > 0 ? item.gelir.toFixed(2) + " ₺" : "-"
+                    }</td>
+                    <td style="color: #f5576c; font-weight: bold;">${
+                      item.gider > 0 ? item.gider.toFixed(2) + " ₺" : "-"
+                    }</td>
                     <td><strong>${bakiye.toFixed(2)} ₺</strong></td>
                 </tr>
             `;
-            });
+        });
 
-            // Listeyi ters çevir (en yeni en üstte)
-            tbody.innerHTML = tableRows.reverse().join('');
+        // Listeyi ters çevir (en yeni en üstte)
+        tbody.innerHTML = tableRows.reverse().join("");
+      }
+
+      // =======================================================
+      // RAPORLAR FONKSİYONLARI
+      // =======================================================
+      async function raporOlustur() {
+        showSpinner();
+        const basTarih = document.getElementById("raporBasTarih").value;
+        const bitTarih = document.getElementById("raporBitTarih").value;
+        const tur = document.getElementById("raporTur").value;
+
+        if (!basTarih || !bitTarih) {
+          alert("Lütfen tarih aralığı seçiniz!");
+          hideSpinner();
+          return;
         }
 
-        // =======================================================
-        // RAPORLAR FONKSİYONLARI
-        // =======================================================
-        async function raporOlustur() {
-            showSpinner();
-            const basTarih = document.getElementById('raporBasTarih').value;
-            const bitTarih = document.getElementById('raporBitTarih').value;
-            const tur = document.getElementById('raporTur').value;
+        let html = "";
 
-            if (!basTarih || !bitTarih) {
-                alert('Lütfen tarih aralığı seçiniz!');
-                hideSpinner();
-                return;
-            }
-
-            let html = '';
-
-            try {
-                switch(tur) {
-                    case 'tesis':
-                        html = await raporTesis(basTarih, bitTarih);
-                        break;
-                    case 'arac':
-                        html = await raporArac(basTarih, bitTarih);
-                        break;
-                    case 'personel':
-                        html = await raporPersonel(basTarih, bitTarih);
-                        break;
-                    case 'gelir':
-                        html = await raporGelir(basTarih, bitTarih);
-                        break;
-                    case 'gider':
-                        html = await raporGider(basTarih, bitTarih);
-                        break;
-                    case 'kasa':
-                        html = await raporKasa(basTarih, bitTarih);
-                        break;
-                }
-            } catch (error) {
-                console.error('Rapor oluşturma hatası:', error);
-                html = '<p style="color: red;">Rapor oluşturulurken bir hata oluştu.</p>';
-            }
-
-            document.getElementById('raporIcerik').innerHTML = html;
-            document.getElementById('raporSonuc').style.display = 'block';
-            hideSpinner();
+        try {
+          switch (tur) {
+            case "tesis":
+              html = await raporTesis(basTarih, bitTarih);
+              break;
+            case "arac":
+              html = await raporArac(basTarih, bitTarih);
+              break;
+            case "personel":
+              html = await raporPersonel(basTarih, bitTarih);
+              break;
+            case "gelir":
+              html = await raporGelir(basTarih, bitTarih);
+              break;
+            case "gider":
+              html = await raporGider(basTarih, bitTarih);
+              break;
+            case "kasa":
+              html = await raporKasa(basTarih, bitTarih);
+              break;
+          }
+        } catch (error) {
+          console.error("Rapor oluşturma hatası:", error);
+          html =
+            '<p style="color: red;">Rapor oluşturulurken bir hata oluştu.</p>';
         }
 
-        async function raporTesis(basTarih, bitTarih) {
-            const { data, error } = await _supabase.from(TABLO.TESIS)
-                .select('*')
-                .gte('tarih', `${basTarih}T00:00:00`)
-                .lte('tarih', `${bitTarih}T23:59:59`)
-                .order('tarih', { ascending: false });
+        document.getElementById("raporIcerik").innerHTML = html;
+        document.getElementById("raporSonuc").style.display = "block";
+        hideSpinner();
+      }
 
-            if (error) throw error;
-            if (data.length === 0) return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
+      async function raporTesis(basTarih, bitTarih) {
+        const { data, error } = await _supabase
+          .from(TABLO.TESIS)
+          .select("*")
+          .gte("tarih", `${basTarih}T00:00:00`)
+          .lte("tarih", `${bitTarih}T23:59:59`)
+          .order("tarih", { ascending: false });
 
-            return `
+        if (error) throw error;
+        if (data.length === 0)
+          return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
+
+        return `
                 <h5>📊 Tesis Giriş/Çıkış Raporu (${basTarih} - ${bitTarih})</h5>
                 <p><strong>Toplam Hareket:</strong> ${data.length} adet</p>
                 <table class="data-table">
@@ -2069,9 +2549,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.map(item => `
+                        ${data
+                          .map(
+                            (item) => `
                             <tr>
-                                <td>${new Date(item.tarih).toLocaleString('tr-TR')}</td>
+                                <td>${new Date(item.tarih).toLocaleString(
+                                  "tr-TR"
+                                )}</td>
                                 <td>${item.islem}</td>
                                 <td>${item.plaka}</td>
                                 <td>${item.sofor}</td>
@@ -2080,28 +2564,40 @@
                                 <td>${item.nereden}</td>
                                 <td>${item.nereye}</td>
                             </tr>
-                        `).join('')}
+                        `
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             `;
-        }
-        
-        async function raporArac(basTarih, bitTarih) {
-            const { data, error } = await _supabase.from(TABLO.ARAC_YAKIT)
-                .select('*')
-                .gte('tarih', basTarih)
-                .lte('tarih', bitTarih)
-                .order('tarih', { ascending: false });
+      }
 
-            if (error) throw error;
-            if (data.length === 0) return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
-            
-            const toplamKm = data.reduce((sum, a) => sum + (a.katetdigiKm || 0), 0);
-            const ortSarfiyat = data.length > 0 ? (data.reduce((sum, a) => sum + parseFloat(a.sarfiyat || 0), 0) / data.length) : 0;
+      async function raporArac(basTarih, bitTarih) {
+        const { data, error } = await _supabase
+          .from(TABLO.ARAC_YAKIT)
+          .select("*")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih)
+          .order("tarih", { ascending: false });
 
-            return `
+        if (error) throw error;
+        if (data.length === 0)
+          return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
+
+        const toplamKm = data.reduce((sum, a) => sum + (a.katetdigiKm || 0), 0);
+        const ortSarfiyat =
+          data.length > 0
+            ? data.reduce((sum, a) => sum + parseFloat(a.sarfiyat || 0), 0) /
+              data.length
+            : 0;
+
+        return `
                 <h5>⛽ Araç Yakıt Sarfiyat Raporu (${basTarih} - ${bitTarih})</h5>
-                <p><strong>Toplam Kayıt:</strong> ${data.length} adet | <strong>Toplam Km:</strong> ${toplamKm} Km | <strong>Ort. Sarfiyat:</strong> ${ortSarfiyat.toFixed(2)} Lt/100Km</p>
+                <p><strong>Toplam Kayıt:</strong> ${
+                  data.length
+                } adet | <strong>Toplam Km:</strong> ${toplamKm} Km | <strong>Ort. Sarfiyat:</strong> ${ortSarfiyat.toFixed(
+          2
+        )} Lt/100Km</p>
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -2114,7 +2610,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.map(item => `
+                        ${data
+                          .map(
+                            (item) => `
                             <tr>
                                 <td>${item.tarih}</td>
                                 <td>${item.plaka}</td>
@@ -2123,23 +2621,27 @@
                                 <td>${item.sonYakit} Lt</td>
                                 <td>${item.sarfiyat} Lt/100Km</td>
                             </tr>
-                        `).join('')}
+                        `
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             `;
-        }
+      }
 
-        async function raporPersonel(basTarih, bitTarih) {
-            const { data, error } = await _supabase.from(TABLO.PERSONEL_DEVAM)
-                .select('*')
-                .gte('tarih', basTarih)
-                .lte('tarih', bitTarih)
-                .order('tarih', { ascending: false });
+      async function raporPersonel(basTarih, bitTarih) {
+        const { data, error } = await _supabase
+          .from(TABLO.PERSONEL_DEVAM)
+          .select("*")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih)
+          .order("tarih", { ascending: false });
 
-            if (error) throw error;
-            if (data.length === 0) return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
+        if (error) throw error;
+        if (data.length === 0)
+          return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
 
-            return `
+        return `
                 <h5>👥 Personel Devam Raporu (${basTarih} - ${bitTarih})</h5>
                 <p><strong>Toplam Kayıt:</strong> ${data.length} adet</p>
                 <table class="data-table">
@@ -2154,34 +2656,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.map(item => `
+                        ${data
+                          .map(
+                            (item) => `
                             <tr>
                                 <td>${item.tarih}</td>
                                 <td>${item.personel}</td>
-                                <td>${item.giris || '-'}</td>
-                                <td>${item.cikis || '-'}</td>
+                                <td>${item.giris || "-"}</td>
+                                <td>${item.cikis || "-"}</td>
                                 <td>${item.calismaSuresi}</td>
                                 <td>${item.durum}</td>
                             </tr>
-                        `).join('')}
+                        `
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             `;
-        }
+      }
 
-        async function raporGelir(basTarih, bitTarih) {
-            const { data, error } = await _supabase.from(TABLO.GELIRLER)
-                .select('*')
-                .gte('tarih', basTarih)
-                .lte('tarih', bitTarih)
-                .order('tarih', { ascending: false });
+      async function raporGelir(basTarih, bitTarih) {
+        const { data, error } = await _supabase
+          .from(TABLO.GELIRLER)
+          .select("*")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih)
+          .order("tarih", { ascending: false });
 
-            if (error) throw error;
-            if (data.length === 0) return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
-            
-            const toplam = data.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
+        if (error) throw error;
+        if (data.length === 0)
+          return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
 
-             return `
+        const toplam = data.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
+
+        return `
                 <h5>💰 Gelir Raporu (${basTarih} - ${bitTarih})</h5>
                 <p><strong>Toplam Gelir:</strong> ${toplam.toFixed(2)} ₺</p>
                 <table class="data-table">
@@ -2195,33 +2703,41 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.map(item => `
+                        ${data
+                          .map(
+                            (item) => `
                             <tr>
                                 <td>${item.tarih}</td>
                                 <td>${item.tur}</td>
                                 <td>${item.musteri}</td>
-                                <td style="color: #38ef7d; font-weight: bold;">${parseFloat(item.tutar).toFixed(2)} ₺</td>
-                                <td>${item.aciklama || '-'}</td>
+                                <td style="color: #38ef7d; font-weight: bold;">${parseFloat(
+                                  item.tutar
+                                ).toFixed(2)} ₺</td>
+                                <td>${item.aciklama || "-"}</td>
                             </tr>
-                        `).join('')}
+                        `
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             `;
-        }
+      }
 
-        async function raporGider(basTarih, bitTarih) {
-            const { data, error } = await _supabase.from(TABLO.GIDERLER)
-                .select('*')
-                .gte('tarih', basTarih)
-                .lte('tarih', bitTarih)
-                .order('tarih', { ascending: false });
-                
-            if (error) throw error;
-            if (data.length === 0) return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
-            
-            const toplam = data.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
+      async function raporGider(basTarih, bitTarih) {
+        const { data, error } = await _supabase
+          .from(TABLO.GIDERLER)
+          .select("*")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih)
+          .order("tarih", { ascending: false });
 
-            return `
+        if (error) throw error;
+        if (data.length === 0)
+          return '<p style="color: #6c757d;">Bu tarih aralığında kayıt bulunamadı.</p>';
+
+        const toplam = data.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
+
+        return `
                 <h5>💸 Gider Raporu (${basTarih} - ${bitTarih})</h5>
                 <p><strong>Toplam Gider:</strong> ${toplam.toFixed(2)} ₺</p>
                 <table class="data-table">
@@ -2234,131 +2750,178 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.map(item => `
+                        ${data
+                          .map(
+                            (item) => `
                             <tr>
                                 <td>${item.tarih}</td>
                                 <td>${item.tur}</td>
-                                <td style="color: #f5576c; font-weight: bold;">${parseFloat(item.tutar).toFixed(2)} ₺</td>
-                                <td>${item.aciklama || '-'}</td>
+                                <td style="color: #f5576c; font-weight: bold;">${parseFloat(
+                                  item.tutar
+                                ).toFixed(2)} ₺</td>
+                                <td>${item.aciklama || "-"}</td>
                             </tr>
-                        `).join('')}
+                        `
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             `;
-        }
+      }
 
-        async function raporKasa(basTarih, bitTarih) {
-            const { data: gelirData, error: gError } = await _supabase.from(TABLO.GELIRLER).select('tutar').gte('tarih', basTarih).lte('tarih', bitTarih);
-            const { data: giderData, error: dError } = await _supabase.from(TABLO.GIDERLER).select('tutar').gte('tarih', basTarih).lte('tarih', bitTarih);
+      async function raporKasa(basTarih, bitTarih) {
+        const { data: gelirData, error: gError } = await _supabase
+          .from(TABLO.GELIRLER)
+          .select("tutar")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih);
+        const { data: giderData, error: dError } = await _supabase
+          .from(TABLO.GIDERLER)
+          .select("tutar")
+          .gte("tarih", basTarih)
+          .lte("tarih", bitTarih);
 
-            if (gError || dError) throw (gError || dError);
+        if (gError || dError) throw gError || dError;
 
-            const toplamGelir = gelirData.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
-            const toplamGider = giderData.reduce((sum, g) => sum + parseFloat(g.tutar), 0);
-            const netKar = toplamGelir - toplamGider;
+        const toplamGelir = gelirData.reduce(
+          (sum, g) => sum + parseFloat(g.tutar),
+          0
+        );
+        const toplamGider = giderData.reduce(
+          (sum, g) => sum + parseFloat(g.tutar),
+          0
+        );
+        const netKar = toplamGelir - toplamGider;
 
-            return `
+        return `
                 <h5>🏦 Kasa Özet Raporu (${basTarih} - ${bitTarih})</h5>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
                     <div style="background: #d4edda; padding: 15px; border-radius: 8px; text-align: center;">
                         <p style="margin: 0; color: #155724;">Toplam Gelir</p>
-                        <h3 style="margin: 5px 0; color: #155724;">${toplamGelir.toFixed(2)} ₺</h3>
+                        <h3 style="margin: 5px 0; color: #155724;">${toplamGelir.toFixed(
+                          2
+                        )} ₺</h3>
                     </div>
                     <div style="background: #f8d7da; padding: 15px; border-radius: 8px; text-align: center;">
                         <p style="margin: 0; color: #721c24;">Toplam Gider</p>
-                        <h3 style="margin: 5px 0; color: #721c24;">${toplamGider.toFixed(2)} ₺</h3>
+                        <h3 style="margin: 5px 0; color: #721c24;">${toplamGider.toFixed(
+                          2
+                        )} ₺</h3>
                     </div>
-                    <div style="background: ${netKar >= 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; text-align: center;">
-                        <p style="margin: 0; color: ${netKar >= 0 ? '#155724' : '#721c24'};">Net ${netKar >= 0 ? 'Kar' : 'Zarar'}</p>
-                        <h3 style="margin: 5px 0; color: ${netKar >= 0 ? '#155724' : '#721c24'};">${(netKar).toFixed(2)} ₺</h3>
+                    <div style="background: ${
+                      netKar >= 0 ? "#d4edda" : "#f8d7da"
+                    }; padding: 15px; border-radius: 8px; text-align: center;">
+                        <p style="margin: 0; color: ${
+                          netKar >= 0 ? "#155724" : "#721c24"
+                        };">Net ${netKar >= 0 ? "Kar" : "Zarar"}</p>
+                        <h3 style="margin: 5px 0; color: ${
+                          netKar >= 0 ? "#155724" : "#721c24"
+                        };">${netKar.toFixed(2)} ₺</h3>
                     </div>
                 </div>
             `;
-        }
-        
-        // raporIndir() fonksiyonu şimdilik güncellenmedi, 
-        // çünkü Excel indirme (CSV) için de verilerin async olarak çekilmesi gerekiyor.
-        // Bu, bir sonraki adım olabilir.
-        function raporIndir() {
-            alert('Excel indirme fonksiyonu, verilerin Supabase\'den çekilmesi için ayrıca güncellenmelidir. Bu versiyonda henüz aktif değildir.');
-        }
+      }
 
+      // raporIndir() fonksiyonu şimdilik güncellenmedi,
+      // çünkü Excel indirme (CSV) için de verilerin async olarak çekilmesi gerekiyor.
+      // Bu, bir sonraki adım olabilir.
+      function raporIndir() {
+        alert(
+          "Excel indirme fonksiyonu, verilerin Supabase'den çekilmesi için ayrıca güncellenmelidir. Bu versiyonda henüz aktif değildir."
+        );
+      }
 
-        // =======================================================
-        // AYARLAR FONKSİYONLARI
-        // =======================================================
-        async function aracEkle() {
-            console.log('Araç ekle çalıştı');
-            showSpinner();
-            const plaka = document.getElementById('yeniAracPlaka').value.trim().toUpperCase();
-            const model = document.getElementById('yeniAracModel').value.trim() || null;
+      // =======================================================
+      // AYARLAR FONKSİYONLARI
+      // =======================================================
+      async function aracEkle() {
+        console.log("Araç ekle çalıştı");
+        showSpinner();
+        const plaka = document
+          .getElementById("yeniAracPlaka")
+          .value.trim()
+          .toUpperCase();
+        const model =
+          document.getElementById("yeniAracModel").value.trim() || null;
 
-            if (!plaka) {
-                alert('Lütfen araç plakasını giriniz!');
-                hideSpinner();
-                return;
-            }
-
-            const { error } = await _supabase.from(TABLO.ARAC_LISTESI).insert({
-                plaka, model
-            });
-            
-            hideSpinner();
-            if(error) {
-                if (error.code === '23505') { // Benzersizlik (unique) ihlali
-                    alert('Hata: Bu plaka zaten kayıtlı!');
-                } else {
-                    handleSupabaseError(error, 'Araç Ekle');
-                }
-            } else {
-                alert('✅ Araç başarıyla eklendi!');
-                document.getElementById('yeniAracPlaka').value = '';
-                document.getElementById('yeniAracModel').value = '';
-                await aracListesiGoster();
-                await aracSelectDoldur();
-                await dashboardGuncelle();
-            }
+        if (!plaka) {
+          alert("Lütfen araç plakasını giriniz!");
+          hideSpinner();
+          return;
         }
 
-        async function aracListesiGoster() {
-            const { data, error } = await _supabase
-                .from(TABLO.ARAC_LISTESI)
-                .select('*')
-                .order('plaka', { ascending: true });
-            
-            if (error) return handleSupabaseError(error, 'Araç Listesi Göster');
+        const { error } = await _supabase.from(TABLO.ARAC_LISTESI).insert({
+          plaka,
+          model,
+        });
 
-            const tbody = document.getElementById('aracListTable');
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #6c757d;">Henüz araç kaydı yok</td></tr>';
-                return;
-            }
+        hideSpinner();
+        if (error) {
+          if (error.code === "23505") {
+            // Benzersizlik (unique) ihlali
+            alert("Hata: Bu plaka zaten kayıtlı!");
+          } else {
+            handleSupabaseError(error, "Araç Ekle");
+          }
+        } else {
+          alert("✅ Araç başarıyla eklendi!");
+          document.getElementById("yeniAracPlaka").value = "";
+          document.getElementById("yeniAracModel").value = "";
+          await aracListesiGoster();
+          await aracSelectDoldur();
+          await dashboardGuncelle();
+        }
+      }
 
-            tbody.innerHTML = data.map(item => `
+      async function aracListesiGoster() {
+        const { data, error } = await _supabase
+          .from(TABLO.ARAC_LISTESI)
+          .select("*")
+          .order("plaka", { ascending: true });
+
+        if (error) return handleSupabaseError(error, "Araç Listesi Göster");
+
+        const tbody = document.getElementById("aracListTable");
+
+        if (data.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="3" style="text-align: center; color: #6c757d;">Henüz araç kaydı yok</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data
+          .map(
+            (item) => `
                 <tr>
                     <td><strong>${item.plaka}</strong></td>
-                    <td>${item.model || '-'}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="aracListSil(${item.id})">🗑️</button></td>
+                    <td>${item.model || "-"}</td>
+                    <td><button class="btn btn-danger btn-small" onclick="aracListSil(${
+                      item.id
+                    })">🗑️</button></td>
                 </tr>
-            `).join('');
-        }
+            `
+          )
+          .join("");
+      }
 
-        async function aracListSil(id) {
-            if (!confirm('Bu aracı silmek istediğinizden emin misiniz?')) return;
-            showSpinner();
-            const { error } = await _supabase.from(TABLO.ARAC_LISTESI).delete().eq('id', id);
+      async function aracListSil(id) {
+        if (!confirm("Bu aracı silmek istediğinizden emin misiniz?")) return;
+        showSpinner();
+        const { error } = await _supabase
+          .from(TABLO.ARAC_LISTESI)
+          .delete()
+          .eq("id", id);
 
-            hideSpinner();
-            if (error) {
-                handleSupabaseError(error, 'Araç Listesinden Sil');
-            } else {
-                alert('Araç silindi.');
-                await aracListesiGoster();
-                await aracSelectDoldur();
-                await dashboardGuncelle();
-            }
+        hideSpinner();
+        if (error) {
+          handleSupabaseError(error, "Araç Listesinden Sil");
+        } else {
+          alert("Araç silindi.");
+          await aracListesiGoster();
+          await aracSelectDoldur();
+          await dashboardGuncelle();
         }
+      }
     </script>
-</body>
+  </body>
 </html>
